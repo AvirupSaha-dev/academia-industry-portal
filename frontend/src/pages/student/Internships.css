@@ -1,0 +1,689 @@
+/* =========================================
+   INTERNSHIPS PAGE
+========================================= */
+
+.internships-page {
+  min-height: 100vh;
+  padding: 42px 50px;
+  background: #f6f8fc;
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.internships-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 28px;
+}
+
+.page-tag {
+  margin: 0 0 8px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.internships-header h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 36px;
+  font-weight: 750;
+}
+
+.page-description {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+
+/* =========================================
+   COUNT CARD
+========================================= */
+
+.internship-count {
+  min-width: 140px;
+  padding: 18px 25px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.internship-count strong {
+  display: block;
+  color: #2563eb;
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 7px;
+}
+
+.internship-count span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+
+/* =========================================
+   TOOLBAR
+========================================= */
+
+.internships-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.search-input {
+  flex: 1;
+  height: 44px;
+  padding: 0 15px;
+  border: 1px solid #d6dfeb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.search-input::placeholder {
+  color: #94a3b8;
+}
+
+.search-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.filter-select {
+  height: 44px;
+  min-width: 125px;
+  padding: 0 12px;
+  border: 1px solid #d6dfeb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  border-color: #2563eb;
+}
+
+
+/* =========================================
+   RESULTS ROW
+========================================= */
+
+.results-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.clear-filters-btn {
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clear-filters-btn:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   INTERNSHIP GRID
+========================================= */
+
+.internships-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+
+/* =========================================
+   INTERNSHIP CARD
+========================================= */
+
+.internship-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 390px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 15px;
+  box-sizing: border-box;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.internship-card:hover {
+  transform: translateY(-3px);
+  border-color: #c8d7ed;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =========================================
+   CARD TOP
+========================================= */
+
+.internship-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+.internship-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.heart-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.heart-btn:hover {
+  color: #2563eb;
+  transform: scale(1.08);
+}
+
+.heart-btn.bookmarked {
+  color: #ef4444;
+}
+
+
+/* =========================================
+   CARD TITLE
+========================================= */
+
+.internship-card h2 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+
+/* =========================================
+   COMPANY
+========================================= */
+
+.company-name {
+  margin: 0 0 14px;
+  color: #475569;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   META
+========================================= */
+
+.internship-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.internship-meta span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+
+/* =========================================
+   STIPEND
+========================================= */
+
+.stipend {
+  margin-bottom: 14px;
+  padding: 9px 12px;
+  background: #f8fafc;
+  border-radius: 7px;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   SKILLS
+========================================= */
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.skills span {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 5px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.internship-description {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+
+/* =========================================
+   VIEW DETAILS BUTTON
+========================================= */
+
+.view-details-btn {
+  width: 100%;
+  min-height: 42px;
+  margin-top: auto;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.view-details-btn:hover {
+  background: #1d4ed8;
+}
+
+.view-details-btn:active {
+  transform: scale(0.98);
+}
+
+
+/* =========================================
+   NO RESULTS
+========================================= */
+
+.no-results {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.no-results-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.no-results h2 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.no-results p {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.no-results button {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 7px;
+  background: #2563eb;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+/* =========================================
+   DETAILS MODAL OVERLAY
+========================================= */
+
+.internship-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   DETAILS MODAL
+========================================= */
+
+.internship-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 650px;
+  max-height: 88vh;
+
+  overflow-y: auto;
+
+  padding: 32px;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  box-shadow:
+    0 25px 70px rgba(15, 23, 42, 0.25);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   MODAL CLOSE
+========================================= */
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 17px;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  font-size: 23px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+
+/* =========================================
+   MODAL TITLE
+========================================= */
+
+.internship-modal h2 {
+  margin: 18px 45px 8px 0;
+
+  color: #0f172a;
+  font-size: 27px;
+  line-height: 1.3;
+}
+
+.internship-modal .company-name {
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+
+/* =========================================
+   MODAL DETAILS GRID
+========================================= */
+
+.internship-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+
+  margin-bottom: 26px;
+}
+
+.internship-detail-grid > div {
+  padding: 15px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.internship-detail-grid span {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.internship-detail-grid strong {
+  display: block;
+
+  color: #334155;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   MODAL HEADINGS
+========================================= */
+
+.internship-modal h3 {
+  margin: 24px 0 10px;
+
+  color: #0f172a;
+  font-size: 16px;
+}
+
+
+/* =========================================
+   MODAL DESCRIPTION
+========================================= */
+
+.modal-description {
+  margin: 0;
+
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* =========================================
+   MODAL SKILLS
+========================================= */
+
+.modal-skills {
+  margin-top: 8px;
+}
+
+.modal-skills span {
+  padding: 7px 11px;
+  font-size: 11px;
+}
+
+
+/* =========================================
+   APPLY BUTTON
+========================================= */
+
+.apply-internship-btn {
+  width: 100%;
+  min-height: 46px;
+
+  margin-top: 25px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.apply-internship-btn:hover {
+  background: #1d4ed8;
+}
+
+.apply-internship-btn:disabled {
+  background: #16a34a;
+  cursor: default;
+}
+
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+.internship-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+.internship-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.internship-modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+
+/* =========================================
+   RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+
+  .internships-page {
+    padding: 35px 30px;
+  }
+
+  .internships-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* =========================================
+   RESPONSIVE - MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .internships-page {
+    padding: 25px 18px;
+  }
+
+  .internships-header {
+    flex-direction: column;
+  }
+
+  .internship-count {
+    width: 100%;
+  }
+
+  .internships-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input,
+  .filter-select {
+    width: 100%;
+  }
+
+  .internships-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .internship-modal {
+    padding: 25px 20px;
+  }
+
+  .internship-modal h2 {
+    font-size: 22px;
+  }
+
+  .internship-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
