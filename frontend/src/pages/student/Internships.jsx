@@ -151,6 +151,12 @@ function Internships({
 
   /* =========================
      APPLICATIONS
+     
+     IMPORTANT:
+     Jobs, Internships and Projects
+     all use the SAME storage key:
+     
+     applications
   ========================= */
 
   const [applications, setApplications] =
@@ -161,9 +167,12 @@ function Internships({
         const saved =
           localStorage.getItem('applications')
 
-        if (!saved) return []
+        if (!saved) {
+          return []
+        }
 
-        const parsed = JSON.parse(saved)
+        const parsed =
+          JSON.parse(saved)
 
         return Array.isArray(parsed)
           ? parsed
@@ -184,8 +193,8 @@ function Internships({
 
 
   /* =========================
-     LOAD APPLICATIONS
-     ========================= */
+     LOAD LATEST APPLICATIONS
+  ========================= */
 
   const loadApplications = () => {
 
@@ -205,11 +214,15 @@ function Internships({
       const parsed =
         JSON.parse(saved)
 
-      setApplications(
-        Array.isArray(parsed)
-          ? parsed
-          : []
-      )
+      if (Array.isArray(parsed)) {
+
+        setApplications(parsed)
+
+      } else {
+
+        setApplications([])
+
+      }
 
     } catch (error) {
 
@@ -226,15 +239,22 @@ function Internships({
 
 
   /* =========================
-     SYNC APPLICATIONS
+     APPLICATION SYNC
      
-     Works when application is
-     withdrawn from Applications page.
+     Updates this page when:
+     
+     - Job is applied
+     - Project is applied
+     - Internship is applied
+     - Application is removed
+     - Another tab changes data
+     - User returns to this page
   ========================= */
 
   useEffect(() => {
 
     loadApplications()
+
 
     window.addEventListener(
       'storage',
@@ -250,6 +270,7 @@ function Internships({
       'focus',
       loadApplications
     )
+
 
     return () => {
 
@@ -274,7 +295,8 @@ function Internships({
 
 
   /* =========================
-     CHECK APPLIED
+     CHECK IF INTERNSHIP
+     IS ALREADY APPLIED
   ========================= */
 
   const isInternshipApplied = (
@@ -285,7 +307,7 @@ function Internships({
       (application) => {
 
         const sameId =
-          String(application.id) ===
+          String(application.id || '') ===
           String(internshipId)
 
         const sameType =
@@ -294,7 +316,10 @@ function Internships({
           ).toLowerCase() ===
           'internship'
 
-        return sameId && sameType
+        return (
+          sameId &&
+          sameType
+        )
 
       }
     )
@@ -315,18 +340,32 @@ function Internships({
             .toLowerCase()
             .trim()
 
+
         const matchesSearch =
+
           internship.title
             .toLowerCase()
-            .includes(searchText) ||
+            .includes(searchText)
+
+          ||
 
           internship.company
             .toLowerCase()
-            .includes(searchText) ||
+            .includes(searchText)
+
+          ||
 
           internship.location
             .toLowerCase()
-            .includes(searchText) ||
+            .includes(searchText)
+
+          ||
+
+          internship.type
+            .toLowerCase()
+            .includes(searchText)
+
+          ||
 
           internship.skills.some(
             (skill) =>
@@ -335,12 +374,17 @@ function Internships({
                 .includes(searchText)
           )
 
+
         const matchesLocation =
+
           locationFilter ===
-            'All Internships' ||
+            'All Internships'
+
+          ||
 
           internship.location ===
             locationFilter
+
 
         return (
           matchesSearch &&
@@ -369,102 +413,278 @@ function Internships({
 
 
   /* =========================
-     VIEW / APPLY
+     APPLY INTERNSHIP
   ========================= */
 
   const handleApplyClick = (
     internship
   ) => {
 
-    /* Always read latest data */
-
-    let currentApplications = []
-
     try {
+
+      /* =========================
+         GET LATEST APPLICATIONS
+      ========================= */
 
       const saved =
         localStorage.getItem(
           'applications'
         )
 
+      let currentApplications = []
+
+
       if (saved) {
 
-        const parsed =
-          JSON.parse(saved)
+        try {
 
-        if (Array.isArray(parsed)) {
+          const parsed =
+            JSON.parse(saved)
 
-          currentApplications =
-            parsed
+          if (Array.isArray(parsed)) {
+
+            currentApplications =
+              parsed
+
+          }
+
+        } catch (error) {
+
+          console.error(
+            'Invalid applications data:',
+            error
+          )
+
+          currentApplications = []
 
         }
 
       }
 
+
+      /* =========================
+         DUPLICATE CHECK
+      ========================= */
+
+      const alreadyApplied =
+        currentApplications.some(
+          (application) => {
+
+            const sameId =
+              String(
+                application.id || ''
+              ) ===
+              String(internship.id)
+
+            const sameType =
+              String(
+                application.type || ''
+              ).toLowerCase() ===
+              'internship'
+
+            return (
+              sameId &&
+              sameType
+            )
+
+          }
+        )
+
+
+      /* =========================
+         ALREADY APPLIED
+      ========================= */
+
+      if (alreadyApplied) {
+
+        setApplications(
+          currentApplications
+        )
+
+        alert(
+          'You have already applied for this internship.'
+        )
+
+        return
+
+      }
+
+
+      /* =========================
+         UNIQUE APPLICATION ID
+         
+         IMPORTANT:
+         Do NOT use Date.now()
+         here.
+         
+         This keeps one permanent
+         ID for this internship.
+      ========================= */
+
+      const applicationId =
+        `internship-${internship.id}`
+
+
+      /* =========================
+         CREATE APPLICATION
+      ========================= */
+
+      const newApplication = {
+
+        applicationId:
+
+          applicationId,
+
+        id:
+
+          internship.id,
+
+        type:
+
+          'Internship',
+
+        title:
+
+          internship.title,
+
+        company:
+
+          internship.company,
+
+        location:
+
+          internship.location,
+
+        mode:
+
+          internship.type,
+
+        duration:
+
+          internship.duration,
+
+        stipend:
+
+          internship.stipend,
+
+        salary:
+
+          '',
+
+        skills:
+
+          internship.skills || [],
+
+        description:
+
+          internship.description || '',
+
+        eligibility:
+
+          internship.eligibility || '',
+
+        deadline:
+
+          internship.deadline || '',
+
+        status:
+
+          'Applied',
+
+        appliedDate:
+
+          new Date().toLocaleDateString(
+            'en-IN',
+            {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            }
+          )
+
+      }
+
+
+      /* =========================
+         ADD WITHOUT REMOVING
+         EXISTING JOB / PROJECT
+         APPLICATIONS
+      ========================= */
+
+      const updatedApplications = [
+
+        ...currentApplications,
+
+        newApplication
+
+      ]
+
+
+      /* =========================
+         SAVE TO LOCAL STORAGE
+      ========================= */
+
+      localStorage.setItem(
+        'applications',
+        JSON.stringify(
+          updatedApplications
+        )
+      )
+
+
+      /* =========================
+         UPDATE CURRENT PAGE
+      ========================= */
+
+      setApplications(
+        updatedApplications
+      )
+
+
+      /* =========================
+         NOTIFY OTHER PAGES
+      ========================= */
+
+      window.dispatchEvent(
+        new Event(
+          'applicationsUpdated'
+        )
+      )
+
+
+      /* =========================
+         PARENT CALLBACK
+      ========================= */
+
+      if (onViewDetails) {
+
+        onViewDetails(
+          internship
+        )
+
+      }
+
+
+      /* =========================
+         SUCCESS
+      ========================= */
+
+      alert(
+        `Application submitted for ${internship.title}!`
+      )
+
     } catch (error) {
 
       console.error(
-        'Failed to read applications:',
+        'Failed to apply for internship:',
         error
       )
 
-    }
-
-
-    /* =========================
-       DUPLICATE CHECK
-    ========================= */
-
-    const alreadyApplied =
-      currentApplications.some(
-        (application) => {
-
-          const sameId =
-            String(application.id) ===
-            String(internship.id)
-
-          const sameType =
-            String(
-              application.type || ''
-            ).toLowerCase() ===
-            'internship'
-
-          return sameId && sameType
-
-        }
-      )
-
-
-    /* =========================
-       ALREADY APPLIED
-    ========================= */
-
-    if (alreadyApplied) {
-
-      setApplications(
-        currentApplications
-      )
-
       alert(
-        'You have already applied for this internship.'
+        'Something went wrong while applying.'
       )
 
-      return
-
     }
-
-
-    /* =========================
-       OPEN DETAILS
-    ========================= */
-
-    setApplications(
-      currentApplications
-    )
-
-    handleViewDetails(
-      internship
-    )
 
   }
 
@@ -534,7 +754,9 @@ function Internships({
           className="filter-select"
           value={locationFilter}
           onChange={(e) =>
-            setLocationFilter(e.target.value)
+            setLocationFilter(
+              e.target.value
+            )
           }
         >
 
@@ -568,7 +790,9 @@ function Internships({
       ========================= */}
 
       <p className="internship-result-count">
+
         Showing {filteredInternships.length} internships
+
       </p>
 
 
@@ -590,12 +814,18 @@ function Internships({
             return (
 
               <div
-                className="internship-card"
+                className={
+                  isApplied
+                    ? 'internship-card applied-internship-card'
+                    : 'internship-card'
+                }
                 key={internship.id}
               >
 
 
-                {/* TOP */}
+                {/* =========================
+                    TOP
+                ========================= */}
 
                 <div className="internship-top">
 
@@ -613,21 +843,27 @@ function Internships({
                 </div>
 
 
-                {/* TITLE */}
+                {/* =========================
+                    TITLE
+                ========================= */}
 
                 <h2>
                   {internship.title}
                 </h2>
 
 
-                {/* COMPANY */}
+                {/* =========================
+                    COMPANY
+                ========================= */}
 
                 <p className="company-name">
                   🏢 {internship.company}
                 </p>
 
 
-                {/* META */}
+                {/* =========================
+                    META
+                ========================= */}
 
                 <div className="internship-meta">
 
@@ -646,14 +882,20 @@ function Internships({
                 </div>
 
 
-                {/* STIPEND */}
+                {/* =========================
+                    STIPEND
+                ========================= */}
 
                 <div className="internship-stipend">
+
                   💰 {internship.stipend}
+
                 </div>
 
 
-                {/* SKILLS */}
+                {/* =========================
+                    SKILLS
+                ========================= */}
 
                 <div className="skills">
 
@@ -670,14 +912,20 @@ function Internships({
                 </div>
 
 
-                {/* DESCRIPTION */}
+                {/* =========================
+                    DESCRIPTION
+                ========================= */}
 
                 <p className="internship-description">
+
                   {internship.description}
+
                 </p>
 
 
-                {/* DEADLINE */}
+                {/* =========================
+                    DEADLINE
+                ========================= */}
 
                 <div className="internship-deadline">
 
@@ -693,7 +941,7 @@ function Internships({
 
 
                 {/* =========================
-                    BUTTON
+                    APPLY BUTTON
                 ========================= */}
 
                 <button
@@ -708,7 +956,7 @@ function Internships({
                       internship
                     )
                   }
-                  disabled={false}
+                  disabled={isApplied}
                 >
 
                   {isApplied
@@ -729,7 +977,7 @@ function Internships({
 
 
       {/* =========================
-          EMPTY
+          EMPTY STATE
       ========================= */}
 
       {filteredInternships.length === 0 && (
@@ -754,6 +1002,5 @@ function Internships({
   )
 
 }
-
 
 export default Internships

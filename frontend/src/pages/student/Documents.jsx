@@ -1,209 +1,471 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Documents.css'
 
-function Documents() {
+const DB_NAME = 'AcademiaIndustryDocuments'
+const STORE_NAME = 'documents'
 
-  const [documents, setDocuments] = useState([
-    {
-      id: 1,
-      name: 'Resume',
-      file: 'resume.pdf',
-      type: 'Resume',
-      status: 'verified',
-      icon: '📄'
-    },
-    {
-      id: 2,
-      name: 'Academic Record',
-      file: 'academic-record.pdf',
-      type: 'Academic Record',
-      status: 'pending',
-      icon: '🎓'
-    },
-    {
-      id: 3,
-      name: 'Certificate',
-      file: 'machine-learning-certificate.pdf',
-      type: 'Certificate',
-      status: 'verified',
-      icon: '🏆'
-    },
-    {
-      id: 4,
-      name: 'Internship Report',
-      file: 'internship-report.pdf',
-      type: 'Internship Report',
-      status: 'rejected',
-      icon: '💼'
+
+function openDatabase() {
+
+  return new Promise((resolve, reject) => {
+
+    const request =
+      indexedDB.open(DB_NAME, 1)
+
+
+    request.onupgradeneeded = () => {
+
+      const db = request.result
+
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+
+        db.createObjectStore(
+          STORE_NAME,
+          {
+            keyPath: 'id'
+          }
+        )
+
+      }
+
     }
-  ])
 
-  const [showUpload, setShowUpload] = useState(false)
-  const [selectedType, setSelectedType] = useState('')
+
+    request.onsuccess = () => {
+
+      resolve(request.result)
+
+    }
+
+
+    request.onerror = () => {
+
+      reject(request.error)
+
+    }
+
+  })
+
+}
+
+
+function Documents({ onNavigate }) {
+
+  const [documents, setDocuments] =
+    useState([])
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [selectedType, setSelectedType] =
+    useState('All')
+
 
   /* =========================
-     STATUS
+     LOAD DOCUMENTS
   ========================= */
 
-  const getStatus = (status) => {
+  const loadDocuments = async () => {
 
-    if (status === 'verified') {
-      return (
-        <span className="document-status verified">
-          ✓ Verified
-        </span>
+    try {
+
+      const db =
+        await openDatabase()
+
+      const transaction =
+        db.transaction(
+          STORE_NAME,
+          'readonly'
+        )
+
+      const store =
+        transaction.objectStore(
+          STORE_NAME
+        )
+
+      const request =
+        store.getAll()
+
+      request.onsuccess = () => {
+
+        const result =
+          request.result || []
+
+        result.sort(
+          (a, b) =>
+            b.createdAt - a.createdAt
+        )
+
+        setDocuments(result)
+        setLoading(false)
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Failed to load documents:',
+        error
       )
+
+      setLoading(false)
+
     }
 
-    if (status === 'pending') {
-      return (
-        <span className="document-status pending">
-          ⏳ Pending Verification
-        </span>
+  }
+
+
+  useEffect(() => {
+
+    loadDocuments()
+
+  }, [])
+
+
+  /* =========================
+     UPLOAD
+  ========================= */
+
+  const handleUpload = async (e) => {
+
+    const file =
+      e.target.files?.[0]
+
+    if (!file) return
+
+
+    const allowedTypes = [
+
+      'application/pdf',
+
+      'application/msword',
+
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+
+      'image/jpeg',
+
+      'image/png'
+
+    ]
+
+
+    if (!allowedTypes.includes(file.type)) {
+
+      alert(
+        'Please upload PDF, DOC, DOCX, JPG or PNG files.'
       )
+
+      e.target.value = ''
+      return
+
     }
 
-    return (
-      <span className="document-status rejected">
-        ✗ Rejected
-      </span>
-    )
+
+    if (file.size > 10 * 1024 * 1024) {
+
+      alert(
+        'File size must be less than 10 MB.'
+      )
+
+      e.target.value = ''
+      return
+
+    }
+
+
+    const type =
+      file.name
+        .toLowerCase()
+        .includes('resume')
+        ? 'Resume'
+        : file.name
+            .toLowerCase()
+            .includes('cv')
+          ? 'Resume'
+          : 'Document'
+
+
+    const document = {
+
+      id:
+        `document-${Date.now()}`,
+
+      name:
+        file.name,
+
+      type,
+
+      size:
+        file.size,
+
+      mimeType:
+        file.type,
+
+      createdAt:
+        Date.now(),
+
+      file
+
+    }
+
+
+    try {
+
+      const db =
+        await openDatabase()
+
+      const transaction =
+        db.transaction(
+          STORE_NAME,
+          'readwrite'
+        )
+
+      const store =
+        transaction.objectStore(
+          STORE_NAME
+        )
+
+      store.put(document)
+
+
+      transaction.oncomplete = () => {
+
+        loadDocuments()
+
+        alert(
+          'Document uploaded successfully!'
+        )
+
+      }
+
+
+      transaction.onerror = () => {
+
+        alert(
+          'Failed to save document.'
+        )
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Upload failed:',
+        error
+      )
+
+      alert(
+        'Something went wrong while uploading.'
+      )
+
+    }
+
+
+    e.target.value = ''
+
   }
 
 
   /* =========================
-     DELETE DOCUMENT
+     DELETE
   ========================= */
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
 
-    const confirmDelete =
+    const confirmed =
       window.confirm(
         'Are you sure you want to delete this document?'
       )
 
-    if (!confirmDelete) return
+    if (!confirmed) return
 
-    setDocuments(
-      documents.filter(
-        (document) => document.id !== id
+
+    try {
+
+      const db =
+        await openDatabase()
+
+      const transaction =
+        db.transaction(
+          STORE_NAME,
+          'readwrite'
+        )
+
+      const store =
+        transaction.objectStore(
+          STORE_NAME
+        )
+
+      store.delete(id)
+
+
+      transaction.oncomplete = () => {
+
+        loadDocuments()
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Failed to delete document:',
+        error
       )
-    )
+
+    }
+
   }
 
 
   /* =========================
-     UPLOAD DOCUMENT
+     DOWNLOAD
   ========================= */
 
-  const handleUpload = (e) => {
+  const handleDownload = (document) => {
 
-    e.preventDefault()
+    if (!document.file) {
 
-    const formData =
-      new FormData(e.target)
-
-    const file =
-      formData.get('document')
-
-    const type =
-      formData.get('documentType')
-
-    if (!file || !file.name) {
-
-      alert('Please select a document.')
+      alert(
+        'File is not available.'
+      )
 
       return
-    }
-
-    if (!type) {
-
-      alert('Please select document type.')
-
-      return
-    }
-
-    const newDocument = {
-
-      id: Date.now(),
-
-      name: type,
-
-      file: file.name,
-
-      type: type,
-
-      status: 'pending',
-
-      icon:
-        type === 'Resume'
-          ? '📄'
-          : type === 'Certificate'
-          ? '🏆'
-          : type === 'Academic Record'
-          ? '🎓'
-          : type === 'Internship Report'
-          ? '💼'
-          : '📁'
 
     }
 
-    setDocuments([
-      newDocument,
-      ...documents
-    ])
 
-    setShowUpload(false)
+    const url =
+      URL.createObjectURL(
+        document.file
+      )
 
-    setSelectedType('')
+    const anchor =
+      window.document.createElement('a')
 
-    alert(
-      'Document uploaded successfully. Verification is pending.'
+    anchor.href = url
+    anchor.download = document.name
+
+    window.document.body.appendChild(
+      anchor
     )
+
+    anchor.click()
+
+    anchor.remove()
+
+    URL.revokeObjectURL(url)
+
   }
 
 
   /* =========================
-     DOCUMENT COUNTS
+     PREVIEW
   ========================= */
 
-  const totalDocuments =
-    documents.length
+  const handlePreview = (document) => {
 
-  const verifiedDocuments =
-    documents.filter(
-      (doc) =>
-        doc.status === 'verified'
-    ).length
+    if (!document.file) return
 
-  const pendingDocuments =
-    documents.filter(
-      (doc) =>
-        doc.status === 'pending'
-    ).length
 
-  const rejectedDocuments =
-    documents.filter(
-      (doc) =>
-        doc.status === 'rejected'
-    ).length
+    if (
+      document.mimeType !==
+        'application/pdf' &&
+      !document.mimeType.startsWith('image/')
+    ) {
+
+      alert(
+        'Preview is available for PDF and image files. Use Download for this document.'
+      )
+
+      return
+
+    }
+
+
+    const url =
+      URL.createObjectURL(
+        document.file
+      )
+
+    window.open(
+      url,
+      '_blank',
+      'noopener,noreferrer'
+    )
+
+  }
+
+
+  /* =========================
+     FORMAT SIZE
+  ========================= */
+
+  const formatSize = (bytes) => {
+
+    if (!bytes) return '0 KB'
+
+    if (bytes < 1024 * 1024) {
+
+      return (
+        Math.round(
+          bytes / 1024
+        ) + ' KB'
+      )
+
+    }
+
+    return (
+      (
+        bytes /
+        (1024 * 1024)
+      ).toFixed(1) +
+      ' MB'
+    )
+
+  }
+
+
+  /* =========================
+     FORMAT DATE
+  ========================= */
+
+  const formatDate = (date) => {
+
+    return new Date(date)
+      .toLocaleDateString(
+        'en-IN',
+        {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }
+      )
+
+  }
+
+
+  const filteredDocuments =
+    selectedType === 'All'
+      ? documents
+      : documents.filter(
+          document =>
+            document.type ===
+            selectedType
+        )
 
 
   return (
 
     <div className="documents-page">
 
-
-      {/* =================================================
-         HEADER
-      ================================================= */}
+      {/* HEADER */}
 
       <div className="documents-header">
 
         <div>
 
           <p className="page-tag">
-            STUDENT PORTAL
+            📁 DOCUMENT MANAGEMENT
           </p>
 
           <h1>
@@ -211,250 +473,229 @@ function Documents() {
           </h1>
 
           <p className="page-description">
-            Upload and manage your academic
-            and professional documents.
+            Store and manage your resume,
+            certificates and important documents.
           </p>
 
         </div>
 
 
-        <button
-          className="upload-btn"
-          onClick={() =>
-            setShowUpload(true)
-          }
-        >
+        <label className="upload-document-btn">
+
           + Upload Document
-        </button>
+
+          <input
+            type="file"
+            hidden
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            onChange={handleUpload}
+          />
+
+        </label>
 
       </div>
 
 
-      {/* =================================================
-         SUMMARY
-      ================================================= */}
+      {/* INFO */}
 
-      <div className="document-summary">
+      <section className="documents-info-card">
 
+        <div className="documents-info-icon">
+          📄
+        </div>
 
-        <div className="summary-card">
+        <div>
 
-          <div className="summary-icon blue">
-            📁
-          </div>
+          <h2>
+            Keep your documents ready
+          </h2>
 
-          <div>
-
-            <p>
-              Total Documents
-            </p>
-
-            <h2>
-              {totalDocuments}
-            </h2>
-
-          </div>
+          <p>
+            Upload your latest resume,
+            certificates and other career
+            documents for easy access.
+          </p>
 
         </div>
 
-
-        <div className="summary-card">
-
-          <div className="summary-icon green">
-            ✓
-          </div>
-
-          <div>
-
-            <p>
-              Verified
-            </p>
-
-            <h2>
-              {verifiedDocuments}
-            </h2>
-
-          </div>
-
-        </div>
+      </section>
 
 
-        <div className="summary-card">
+      {/* FILTER */}
 
-          <div className="summary-icon orange">
-            ⏳
-          </div>
+      <div className="documents-toolbar">
 
-          <div>
+        <div>
 
-            <p>
-              Pending
-            </p>
+          <h2>
+            Your Documents
+          </h2>
 
-            <h2>
-              {pendingDocuments}
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div className="summary-card">
-
-          <div className="summary-icon red">
-            ✗
-          </div>
-
-          <div>
-
-            <p>
-              Rejected
-            </p>
-
-            <h2>
-              {rejectedDocuments}
-            </h2>
-
-          </div>
-
-        </div>
-
-
-      </div>
-
-
-      {/* =================================================
-         DOCUMENT LIST
-      ================================================= */}
-
-      <section className="documents-section">
-
-
-        <div className="section-heading">
-
-          <div>
-
-            <p className="section-tag">
-              DOCUMENT MANAGEMENT
-            </p>
-
-            <h2>
-              Your Documents
-            </h2>
-
-          </div>
-
-
-          <span className="document-count">
-            {totalDocuments} Documents
+          <span>
+            {documents.length} document
+            {documents.length !== 1
+              ? 's'
+              : ''}
           </span>
 
         </div>
 
 
-        <div className="documents-list">
+        <select
+          value={selectedType}
+          onChange={(e) =>
+            setSelectedType(
+              e.target.value
+            )
+          }
+        >
+
+          <option value="All">
+            All Documents
+          </option>
+
+          <option value="Resume">
+            Resume
+          </option>
+
+          <option value="Document">
+            Documents
+          </option>
+
+        </select>
+
+      </div>
 
 
-          {documents.length === 0 ? (
+      {/* DOCUMENT LIST */}
 
-            <div className="empty-documents">
+      {loading ? (
 
-              <div className="empty-icon">
-                📂
-              </div>
+        <div className="documents-empty">
 
-              <h3>
-                No documents uploaded
-              </h3>
+          <div>
+            ⏳
+          </div>
 
-              <p>
-                Upload your resume,
-                certificates and other
-                documents to get started.
-              </p>
+          <h3>
+            Loading documents...
+          </h3>
 
-              <button
-                className="upload-btn"
-                onClick={() =>
-                  setShowUpload(true)
-                }
-              >
-                + Upload Document
-              </button>
+        </div>
 
-            </div>
+      ) : filteredDocuments.length === 0 ? (
 
-          ) : (
+        <div className="documents-empty">
 
-            documents.map((document) => (
+          <div>
+            📂
+          </div>
+
+          <h3>
+            No documents found
+          </h3>
+
+          <p>
+            Upload your resume or certificates
+            to get started.
+          </p>
+
+          <label className="empty-upload-btn">
+
+            + Upload Document
+
+            <input
+              type="file"
+              hidden
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              onChange={handleUpload}
+            />
+
+          </label>
+
+        </div>
+
+      ) : (
+
+        <div className="documents-grid">
+
+          {filteredDocuments.map(
+            document => (
 
               <div
                 className="document-card"
                 key={document.id}
               >
 
+                <div className="document-top">
 
-                {/* ICON */}
+                  <div className="document-icon">
+                    {document.mimeType ===
+                    'application/pdf'
+                      ? '📕'
+                      : document.mimeType.startsWith(
+                          'image/'
+                        )
+                        ? '🖼️'
+                        : '📄'}
+                  </div>
 
-                <div className="document-icon">
-                  {document.icon}
-                </div>
-
-
-                {/* INFORMATION */}
-
-                <div className="document-info">
-
-                  <h3>
-                    {document.name}
-                  </h3>
-
-                  <p className="document-file">
-                    {document.file}
-                  </p>
-
-                  <p className="document-type">
+                  <span className="document-type">
                     {document.type}
-                  </p>
-
-                  {getStatus(
-                    document.status
-                  )}
+                  </span>
 
                 </div>
 
 
-                {/* ACTIONS */}
+                <h3>
+                  {document.name}
+                </h3>
+
+
+                <div className="document-meta">
+
+                  <span>
+                    📦 {formatSize(
+                      document.size
+                    )}
+                  </span>
+
+                  <span>
+                    📅 {formatDate(
+                      document.createdAt
+                    )}
+                  </span>
+
+                </div>
+
 
                 <div className="document-actions">
 
                   <button
-                    className="view-btn"
+                    type="button"
                     onClick={() =>
-                      alert(
-                        `Opening ${document.file}`
+                      handlePreview(
+                        document
                       )
                     }
                   >
-                    View
+                    Preview
                   </button>
 
-
                   <button
-                    className="download-btn"
+                    type="button"
                     onClick={() =>
-                      alert(
-                        `Downloading ${document.file}`
+                      handleDownload(
+                        document
                       )
                     }
                   >
                     Download
                   </button>
 
-
                   <button
-                    className="delete-btn"
+                    type="button"
+                    className="delete-document-btn"
                     onClick={() =>
                       handleDelete(
                         document.id
@@ -466,184 +707,10 @@ function Documents() {
 
                 </div>
 
-
               </div>
 
-            ))
-
+            )
           )}
-
-        </div>
-
-      </section>
-
-
-      {/* =================================================
-         VERIFICATION INFORMATION
-      ================================================= */}
-
-      <section className="verification-card">
-
-        <div className="verification-icon">
-          🛡️
-        </div>
-
-        <div>
-
-          <h3>
-            Document Verification
-          </h3>
-
-          <p>
-            Verified documents help companies
-            trust your academic and professional
-            profile. Documents marked as pending
-            will be reviewed by the institution.
-          </p>
-
-        </div>
-
-      </section>
-
-
-      {/* =================================================
-         UPLOAD MODAL
-      ================================================= */}
-
-      {showUpload && (
-
-        <div className="modal-overlay">
-
-          <div className="upload-modal">
-
-
-            {/* CLOSE */}
-
-            <button
-              className="close-btn"
-              onClick={() => {
-                setShowUpload(false)
-                setSelectedType('')
-              }}
-            >
-              ×
-            </button>
-
-
-            <div className="modal-icon">
-              📤
-            </div>
-
-
-            <h2>
-              Upload Document
-            </h2>
-
-            <p>
-              Add a new document to your
-              student profile.
-            </p>
-
-
-            <form
-              onSubmit={handleUpload}
-            >
-
-
-              {/* DOCUMENT TYPE */}
-
-              <label>
-                Document Type
-              </label>
-
-              <select
-                name="documentType"
-                value={selectedType}
-                onChange={(e) =>
-                  setSelectedType(
-                    e.target.value
-                  )
-                }
-                required
-              >
-
-                <option value="">
-                  Select document type
-                </option>
-
-                <option value="Resume">
-                  Resume
-                </option>
-
-                <option value="Certificate">
-                  Certificate
-                </option>
-
-                <option value="Academic Record">
-                  Academic Record
-                </option>
-
-                <option value="Internship Report">
-                  Internship Report
-                </option>
-
-                <option value="Project Document">
-                  Project Document
-                </option>
-
-              </select>
-
-
-              {/* FILE */}
-
-              <label>
-                Select File
-              </label>
-
-              <input
-                type="file"
-                name="document"
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                required
-              />
-
-
-              <p className="file-hint">
-                Supported formats: PDF, DOC,
-                DOCX, JPG, PNG
-              </p>
-
-
-              {/* BUTTONS */}
-
-              <div className="modal-actions">
-
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => {
-                    setShowUpload(false)
-                    setSelectedType('')
-                  }}
-                >
-                  Cancel
-                </button>
-
-
-                <button
-                  type="submit"
-                  className="confirm-upload-btn"
-                >
-                  Upload Document
-                </button>
-
-              </div>
-
-
-            </form>
-
-
-          </div>
 
         </div>
 
@@ -653,6 +720,5 @@ function Documents() {
 
   )
 }
-
 
 export default Documents

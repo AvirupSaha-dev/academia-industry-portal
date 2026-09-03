@@ -1,692 +1,642 @@
-/* =========================================================
+/* =========================================
    DOCUMENTS PAGE
-========================================================= */
+========================================= */
 
 .documents-page {
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 10px 0 50px;
+  min-height: 100vh;
+  padding: 42px 52px 70px;
+  background: #f6f8fc;
+  color: #172033;
   box-sizing: border-box;
 }
 
 
-/* =========================================================
+/* =========================================
    HEADER
-========================================================= */
+========================================= */
 
 .documents-header {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 30px;
-  margin-bottom: 28px;
 }
 
-.page-tag,
-.section-tag {
-  margin: 0 0 7px;
-  font-size: 11px;
+.documents-header > div {
+  flex: 1;
+}
+
+.page-tag {
+  margin: 0 0 8px;
+
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 1.3px;
   color: #2563eb;
+  text-transform: uppercase;
 }
 
 .documents-header h1 {
   margin: 0;
-  color: #0f172a;
-  font-size: 30px;
-  line-height: 1.2;
-  font-weight: 700;
+
+  font-size: 36px;
+  line-height: 1.15;
+  font-weight: 750;
+  color: #111827;
 }
 
 .page-description {
-  margin: 8px 0 0;
-  color: #64748b;
-  font-size: 14px;
+  margin: 10px 0 0;
+
+  font-size: 15px;
   line-height: 1.6;
+  color: #64748b;
 }
 
 
-/* =========================================================
+/* =========================================
    UPLOAD BUTTON
-========================================================= */
+========================================= */
 
-.upload-btn {
-  border: none;
-  border-radius: 8px;
+.upload-document-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 165px;
+  height: 44px;
+  padding: 0 20px;
+
+  border-radius: 9px;
+
   background: #2563eb;
-  color: white;
-  padding: 12px 20px;
-  font-size: 13px;
-  font-weight: 600;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 650;
+
   cursor: pointer;
-  white-space: nowrap;
-  transition: 0.2s ease;
+
+  border: 1px solid #2563eb;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.upload-btn:hover {
+.upload-document-btn:hover {
   background: #1d4ed8;
+
+  box-shadow:
+    0 8px 18px rgba(37, 99, 235, 0.18);
+
   transform: translateY(-1px);
 }
 
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-.document-summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 25px;
+.upload-document-btn:active {
+  transform: translateY(0);
 }
 
-.summary-card {
-  min-height: 88px;
-  padding: 18px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+
+/* =========================================
+   INFORMATION CARD
+========================================= */
+
+.documents-info-card {
+  max-width: 1200px;
+  margin: 0 auto 38px;
+
   display: flex;
   align-items: center;
-  gap: 14px;
-  box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  gap: 20px;
+
+  padding: 24px 26px;
+
+  background: #ffffff;
+
+  border: 1px solid #e4e9f2;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 15px rgba(15, 23, 42, 0.035);
 }
 
-.summary-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 9px;
+.documents-info-icon {
+  width: 54px;
+  height: 54px;
+
+  flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
-  flex-shrink: 0;
-}
 
-.summary-icon.blue {
-  background: #eff6ff;
-}
-
-.summary-icon.green {
-  background: #ecfdf5;
-}
-
-.summary-icon.orange {
-  background: #fff7ed;
-}
-
-.summary-icon.red {
-  background: #fef2f2;
-}
-
-.summary-card p {
-  margin: 0 0 3px;
-  color: #64748b;
-  font-size: 12px;
-}
-
-.summary-card h2 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-
-/* =========================================================
-   DOCUMENT SECTION
-========================================================= */
-
-.documents-section {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+
+  background: #eff6ff;
+
+  font-size: 26px;
 }
 
-.section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
+.documents-info-card h2 {
+  margin: 0 0 6px;
 
-.section-heading h2 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
+
+  color: #172033;
 }
 
-.document-count {
+.documents-info-card p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.55;
+
   color: #64748b;
-  font-size: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 7px 11px;
-  border-radius: 20px;
 }
 
 
-/* =========================================================
-   DOCUMENT LIST
-========================================================= */
+/* =========================================
+   TOOLBAR
+========================================= */
 
-.documents-list {
+.documents-toolbar {
+  max-width: 1200px;
+  margin: 0 auto 22px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.documents-toolbar > div {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 5px;
 }
 
+.documents-toolbar h2 {
+  margin: 0;
+
+  font-size: 23px;
+  font-weight: 720;
+
+  color: #111827;
+}
+
+.documents-toolbar span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+
+/* =========================================
+   FILTER SELECT
+========================================= */
+
+.documents-toolbar select {
+  width: 175px;
+  height: 42px;
+
+  padding: 0 36px 0 13px;
+
+  border: 1px solid #d8deea;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 14px;
+
+  outline: none;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.documents-toolbar select:hover {
+  border-color: #b8c2d4;
+}
+
+.documents-toolbar select:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* =========================================
+   DOCUMENT GRID
+========================================= */
+
+.documents-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* =========================================
+   DOCUMENT CARD
+========================================= */
+
 .document-card {
-  min-height: 92px;
-  padding: 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: 0.2s ease;
-  box-sizing: border-box;
+  min-width: 0;
+
+  padding: 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #e4e9f2;
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 14px rgba(15, 23, 42, 0.035);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .document-card:hover {
-  border-color: #bfdbfe;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+  transform: translateY(-2px);
+
+  border-color: #d6deed;
+
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.07);
+}
+
+
+/* =========================================
+   DOCUMENT TOP
+========================================= */
+
+.document-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
 }
 
 .document-icon {
   width: 48px;
   height: 48px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: #eff6ff;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-}
 
-.document-info {
-  flex: 1;
-  min-width: 0;
-}
+  border-radius: 11px;
 
-.document-info h3 {
-  margin: 0 0 4px;
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 650;
-}
+  background: #eff6ff;
 
-.document-file {
-  margin: 0 0 3px;
-  color: #475569;
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 23px;
 }
 
 .document-type {
-  margin: 0 0 7px;
-  color: #94a3b8;
-  font-size: 11px;
-}
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-.document-status {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
+
+  padding: 6px 10px;
+
   border-radius: 20px;
-  font-size: 10px;
-  font-weight: 600;
-}
 
-.document-status.verified {
-  color: #047857;
-  background: #ecfdf5;
-}
+  background: #eff6ff;
+  color: #2563eb;
 
-.document-status.pending {
-  color: #b45309;
-  background: #fffbeb;
-}
+  font-size: 11px;
+  font-weight: 700;
 
-.document-status.rejected {
-  color: #dc2626;
-  background: #fef2f2;
+  white-space: nowrap;
 }
 
 
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
+/* =========================================
+   DOCUMENT NAME
+========================================= */
+
+.document-card h3 {
+  margin: 0 0 15px;
+
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 700;
+
+  color: #172033;
+
+  word-break: break-word;
+}
+
+
+/* =========================================
+   DOCUMENT META
+========================================= */
+
+.document-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px 18px;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid #edf0f5;
+}
+
+.document-meta span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+
+/* =========================================
+   DOCUMENT ACTIONS
+========================================= */
 
 .document-actions {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 9px;
+
+  margin-top: 18px;
 }
 
-.view-btn,
-.download-btn,
-.delete-btn {
-  border-radius: 7px;
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
+.document-actions button {
+  height: 38px;
 
-.view-btn {
-  border: 1px solid #2563eb;
-  color: #2563eb;
+  border-radius: 8px;
+
+  border: 1px solid #d9e0eb;
+
   background: #ffffff;
-}
 
-.view-btn:hover {
-  background: #eff6ff;
-}
+  color: #334155;
 
-.download-btn {
-  border: 1px solid #cbd5e1;
-  color: #475569;
-  background: #ffffff;
-}
-
-.download-btn:hover {
-  background: #f8fafc;
-}
-
-.delete-btn {
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  background: #ffffff;
-}
-
-.delete-btn:hover {
-  background: #fef2f2;
-}
-
-
-/* =========================================================
-   VERIFICATION CARD
-========================================================= */
-
-.verification-card {
-  margin-top: 20px;
-  padding: 18px 20px;
-  border: 1px solid #dbeafe;
-  border-radius: 10px;
-  background: #f8fbff;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.verification-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 9px;
-  background: #eff6ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 19px;
-  flex-shrink: 0;
-}
-
-.verification-card h3 {
-  margin: 1px 0 5px;
-  color: #0f172a;
-  font-size: 14px;
-}
-
-.verification-card p {
-  margin: 0;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-========================================================= */
-
-.empty-documents {
-  padding: 50px 20px;
-  text-align: center;
-  border: 1px dashed #cbd5e1;
-  border-radius: 10px;
-}
-
-.empty-icon {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 14px;
-  border-radius: 50%;
-  background: #eff6ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 25px;
-}
-
-.empty-documents h3 {
-  margin: 0 0 7px;
-  color: #0f172a;
-  font-size: 16px;
-}
-
-.empty-documents p {
-  max-width: 400px;
-  margin: 0 auto 18px;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(15, 23, 42, 0.48);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.upload-modal {
-  position: relative;
-  width: 100%;
-  max-width: 470px;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 30px;
-  box-sizing: border-box;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
-}
-
-.close-btn {
-  position: absolute;
-  top: 14px;
-  right: 15px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  background: #f8fafc;
-  color: #64748b;
-  font-size: 21px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.close-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-.modal-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  background: #eff6ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-}
-
-.upload-modal h2 {
-  margin: 0 0 6px;
-  color: #0f172a;
-  font-size: 22px;
-}
-
-.upload-modal > p {
-  margin: 0 0 22px;
-  color: #64748b;
   font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
 }
 
-.upload-modal form {
+.document-actions button:hover {
+  background: #f8fafc;
+  border-color: #bfc9d9;
+
+  transform: translateY(-1px);
+}
+
+.document-actions button:first-child {
+  color: #2563eb;
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.document-actions button:first-child:hover {
+  background: #dbeafe;
+}
+
+
+/* =========================================
+   DELETE BUTTON
+========================================= */
+
+.document-actions .delete-document-btn {
+  grid-column: 1 / -1;
+
+  color: #dc2626;
+
+  border-color: #fecaca;
+
+  background: #fffafa;
+}
+
+.document-actions .delete-document-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.documents-empty {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  min-height: 280px;
+
   display: flex;
   flex-direction: column;
-}
+  align-items: center;
+  justify-content: center;
 
-.upload-modal label {
-  margin-bottom: 7px;
-  color: #334155;
-  font-size: 12px;
-  font-weight: 600;
-}
+  padding: 45px 25px;
 
-.upload-modal select,
-.upload-modal input[type="file"] {
-  width: 100%;
-  min-height: 42px;
-  margin-bottom: 16px;
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
   background: #ffffff;
-  color: #334155;
-  font-size: 12px;
-  box-sizing: border-box;
-  outline: none;
+
+  border: 1px dashed #d5dce8;
+  border-radius: 15px;
+
+  text-align: center;
 }
 
-.upload-modal select:focus,
-.upload-modal input[type="file"]:focus {
-  border-color: #2563eb;
-}
+.documents-empty > div {
+  width: 65px;
+  height: 65px;
 
-.upload-modal input[type="file"] {
-  padding: 9px;
-}
-
-.file-hint {
-  margin: -7px 0 20px;
-  color: #94a3b8;
-  font-size: 10px;
-}
-
-
-/* =========================================================
-   MODAL ACTIONS
-========================================================= */
-
-.modal-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 9px;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 14px;
+
+  border-radius: 50%;
+
+  background: #f1f5f9;
+
+  font-size: 30px;
 }
 
-.cancel-btn,
-.confirm-upload-btn {
-  padding: 10px 16px;
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
+.documents-empty h3 {
+  margin: 0 0 8px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #172033;
 }
 
-.cancel-btn {
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #475569;
+.documents-empty p {
+  max-width: 420px;
+
+  margin: 0 0 20px;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: #64748b;
 }
 
-.cancel-btn:hover {
-  background: #f8fafc;
-}
 
-.confirm-upload-btn {
-  border: none;
+/* =========================================
+   EMPTY UPLOAD BUTTON
+========================================= */
+
+.empty-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 40px;
+
+  padding: 0 17px;
+
+  border-radius: 8px;
+
   background: #2563eb;
   color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
-.confirm-upload-btn:hover {
+.empty-upload-btn:hover {
   background: #1d4ed8;
+  transform: translateY(-1px);
 }
 
 
-/* =========================================================
+/* =========================================
    RESPONSIVE - TABLET
-========================================================= */
+========================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
 
   .documents-page {
-    padding: 10px 5px 40px;
+    padding: 35px 30px 60px;
   }
 
-  .document-summary {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .document-card {
-    align-items: flex-start;
-  }
-
-  .document-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .view-btn,
-  .download-btn,
-  .delete-btn {
-    min-width: 80px;
+  .documents-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 
 }
 
 
-/* =========================================================
+/* =========================================
    RESPONSIVE - MOBILE
-========================================================= */
+========================================= */
 
-@media (max-width: 650px) {
+@media (max-width: 700px) {
+
+  .documents-page {
+    padding: 28px 18px 50px;
+  }
 
   .documents-header {
     flex-direction: column;
-    gap: 16px;
+    align-items: stretch;
+
+    margin-bottom: 25px;
   }
 
   .documents-header h1 {
-    font-size: 25px;
+    font-size: 30px;
   }
 
-  .upload-btn {
-    width: 100%;
+  .upload-document-btn {
+    width: fit-content;
   }
 
-  .document-summary {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .summary-card {
-    padding: 13px;
-  }
-
-  .summary-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-  }
-
-  .summary-card h2 {
-    font-size: 19px;
-  }
-
-  .documents-section {
-    padding: 16px;
-  }
-
-  .section-heading {
+  .documents-info-card {
     align-items: flex-start;
-    gap: 10px;
+
+    padding: 20px;
+
+    margin-bottom: 28px;
   }
 
-  .section-heading h2 {
-    font-size: 18px;
+  .documents-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 15px;
   }
 
-  .document-card {
-    flex-wrap: wrap;
-  }
-
-  .document-info {
-    width: calc(100% - 64px);
-    flex: none;
-  }
-
-  .document-actions {
+  .documents-toolbar select {
     width: 100%;
-    flex-direction: row;
-    margin-top: 5px;
   }
 
-  .view-btn,
-  .download-btn,
-  .delete-btn {
-    flex: 1;
-  }
+  .documents-grid {
+    grid-template-columns: 1fr;
 
-  .verification-card {
-    padding: 15px;
-  }
-
-  .upload-modal {
-    padding: 24px 20px;
+    gap: 16px;
   }
 
 }
 
 
-/* =========================================================
-   VERY SMALL MOBILE
-========================================================= */
+/* =========================================
+   VERY SMALL SCREENS
+========================================= */
 
-@media (max-width: 400px) {
+@media (max-width: 430px) {
 
-  .document-summary {
-    grid-template-columns: 1fr;
+  .documents-page {
+    padding: 22px 14px 40px;
   }
 
-  .document-actions {
+  .documents-header h1 {
+    font-size: 27px;
+  }
+
+  .documents-info-card {
     flex-direction: column;
   }
 
-  .view-btn,
-  .download-btn,
-  .delete-btn {
+  .upload-document-btn {
     width: 100%;
+  }
+
+  .document-card {
+    padding: 18px;
   }
 
 }

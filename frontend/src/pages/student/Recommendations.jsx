@@ -248,28 +248,12 @@ function Recommendations() {
   const [selectedCourse, setSelectedCourse] =
     useState(null)
 
-  const [appliedInternships, setAppliedInternships] =
+
+  const [appliedApplications, setAppliedApplications] =
     useState(() => {
 
       const saved =
-        localStorage.getItem(
-          'recommendedInternshipApplications'
-        )
-
-      return saved
-        ? JSON.parse(saved)
-        : []
-
-    })
-
-
-  const [appliedJobs, setAppliedJobs] =
-    useState(() => {
-
-      const saved =
-        localStorage.getItem(
-          'recommendedJobApplications'
-        )
+        localStorage.getItem('applications')
 
       return saved
         ? JSON.parse(saved)
@@ -300,22 +284,16 @@ function Recommendations() {
   useEffect(() => {
 
     localStorage.setItem(
-      'recommendedInternshipApplications',
-      JSON.stringify(appliedInternships)
+      'applications',
+      JSON.stringify(appliedApplications)
     )
 
-  }, [appliedInternships])
+  }, [appliedApplications])
 
 
-  useEffect(() => {
-
-    localStorage.setItem(
-      'recommendedJobApplications',
-      JSON.stringify(appliedJobs)
-    )
-
-  }, [appliedJobs])
-
+  /* =====================================================
+     SAVE STARTED COURSES
+  ===================================================== */
 
   useEffect(() => {
 
@@ -338,6 +316,7 @@ function Recommendations() {
       if (event.key === 'Escape') {
 
         setSelectedOpportunity(null)
+        setSelectedOpportunityType(null)
         setSelectedCourse(null)
 
       }
@@ -362,23 +341,117 @@ function Recommendations() {
 
 
   /* =====================================================
+     APPLICATION CHECK
+  ===================================================== */
+
+  const isApplied = (type, id) => {
+
+    return appliedApplications.some(
+      (application) =>
+        application.sourceId === id &&
+        application.source === 'recommendations' &&
+        application.type.toLowerCase() === type.toLowerCase()
+    )
+
+  }
+
+
+  /* =====================================================
+     CREATE APPLICATION
+  ===================================================== */
+
+  const createApplication = (
+    opportunity,
+    type
+  ) => {
+
+    const alreadyApplied =
+      isApplied(
+        type,
+        opportunity.id
+      )
+
+    if (alreadyApplied) {
+      return
+    }
+
+
+    const today =
+      new Date().toLocaleDateString(
+        'en-IN',
+        {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        }
+      )
+
+
+    const newApplication = {
+
+      applicationId:
+        `recommendation-${type}-${opportunity.id}`,
+
+      source:
+        'recommendations',
+
+      sourceId:
+        opportunity.id,
+
+      type:
+        type === 'internship'
+          ? 'Internship'
+          : 'Job',
+
+      title:
+        opportunity.title,
+
+      company:
+        opportunity.company,
+
+      location:
+        opportunity.location,
+
+      mode:
+        opportunity.mode,
+
+      duration:
+        opportunity.duration || '',
+
+      salary:
+        opportunity.salary || '',
+
+      status:
+        'Applied',
+
+      appliedDate:
+        today,
+
+    }
+
+
+    setAppliedApplications(
+      (previous) => [
+        ...previous,
+        newApplication,
+      ]
+    )
+
+  }
+
+
+  /* =====================================================
      APPLY INTERNSHIP
   ===================================================== */
 
-  const handleApplyInternship = (internship) => {
+  const handleApplyInternship = (
+    internship
+  ) => {
 
-    setAppliedInternships((previous) => {
-
-      if (previous.includes(internship.id)) {
-        return previous
-      }
-
-      return [
-        ...previous,
-        internship.id,
-      ]
-
-    })
+    createApplication(
+      internship,
+      'internship'
+    )
 
   }
 
@@ -387,29 +460,25 @@ function Recommendations() {
      APPLY JOB
   ===================================================== */
 
-  const handleApplyJob = (job) => {
+  const handleApplyJob = (
+    job
+  ) => {
 
-    setAppliedJobs((previous) => {
-
-      if (previous.includes(job.id)) {
-        return previous
-      }
-
-      return [
-        ...previous,
-        job.id,
-      ]
-
-    })
+    createApplication(
+      job,
+      'job'
+    )
 
   }
 
 
   /* =====================================================
-     VIEW INTERNSHIP DETAILS
+     VIEW INTERNSHIP
   ===================================================== */
 
-  const handleViewInternship = (internship) => {
+  const handleViewInternship = (
+    internship
+  ) => {
 
     setSelectedOpportunity(
       internship
@@ -423,10 +492,12 @@ function Recommendations() {
 
 
   /* =====================================================
-     VIEW JOB DETAILS
+     VIEW JOB
   ===================================================== */
 
-  const handleViewJob = (job) => {
+  const handleViewJob = (
+    job
+  ) => {
 
     setSelectedOpportunity(
       job
@@ -440,23 +511,33 @@ function Recommendations() {
 
 
   /* =====================================================
-     START COURSE
+     START LEARNING
   ===================================================== */
 
-  const handleStartLearning = (course) => {
+  const handleStartLearning = (
+    course
+  ) => {
 
-    setStartedCourses((previous) => {
+    setStartedCourses(
+      (previous) => {
 
-      if (previous.includes(course.id)) {
-        return previous
+        if (
+          previous.includes(
+            course.id
+          )
+        ) {
+
+          return previous
+
+        }
+
+        return [
+          ...previous,
+          course.id,
+        ]
+
       }
-
-      return [
-        ...previous,
-        course.id,
-      ]
-
-    })
+    )
 
     setSelectedCourse(null)
 
@@ -464,24 +545,12 @@ function Recommendations() {
 
 
   /* =====================================================
-     CHECK APPLICATION
+     COURSE START CHECK
   ===================================================== */
 
-  const isInternshipApplied = (id) => {
-
-    return appliedInternships.includes(id)
-
-  }
-
-
-  const isJobApplied = (id) => {
-
-    return appliedJobs.includes(id)
-
-  }
-
-
-  const isCourseStarted = (id) => {
+  const isCourseStarted = (
+    id
+  ) => {
 
     return startedCourses.includes(id)
 
@@ -593,141 +662,145 @@ function Recommendations() {
 
         <div className="recommendation-grid">
 
-          {internships.map((internship) => {
+          {internships.map(
+            (internship) => {
 
-            const applied =
-              isInternshipApplied(
-                internship.id
-              )
+              const applied =
+                isApplied(
+                  'Internship',
+                  internship.id
+                )
 
-            return (
 
-              <div
-                className="recommendation-card"
-                key={internship.id}
-              >
+              return (
 
-                <div className="recommendation-card-top">
+                <div
+                  className="recommendation-card"
+                  key={internship.id}
+                >
 
-                  <span className="opportunity-label">
-                    Internship
-                  </span>
+                  <div className="recommendation-card-top">
 
-                  <div className="match-score">
+                    <span className="opportunity-label">
+                      Internship
+                    </span>
 
-                    <strong>
-                      {internship.match}%
-                    </strong>
+                    <div className="match-score">
+
+                      <strong>
+                        {internship.match}%
+                      </strong>
+
+                      <span>
+                        Match
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <h3>
+                    {internship.title}
+                  </h3>
+
+
+                  <p className="recommendation-company">
+                    🏢 {internship.company}
+                  </p>
+
+
+                  <div className="recommendation-meta">
 
                     <span>
-                      Match
+                      📍 {internship.location}
                     </span>
+
+                    <span>
+                      💼 {internship.mode}
+                    </span>
+
+                    <span>
+                      ◷ {internship.duration}
+                    </span>
+
+                  </div>
+
+
+                  <div className="recommended-skills">
+
+                    {internship.skills.map(
+                      (skill, index) => (
+
+                        <span
+                          key={index}
+                          className={
+                            skill.status === 'matched'
+                              ? 'skill-matched'
+                              : 'skill-missing'
+                          }
+                        >
+
+                          {skill.status === 'matched'
+                            ? '✓'
+                            : '⚠'}
+
+                          {' '}
+
+                          {skill.name}
+
+                        </span>
+
+                      )
+                    )}
+
+                  </div>
+
+
+                  <div className="recommendation-actions">
+
+                    <button
+                      className="secondary-action-btn"
+                      type="button"
+                      onClick={() =>
+                        handleViewInternship(
+                          internship
+                        )
+                      }
+                    >
+                      View Details
+                    </button>
+
+
+                    <button
+                      className={
+                        applied
+                          ? 'primary-action-btn applied'
+                          : 'primary-action-btn'
+                      }
+                      type="button"
+                      disabled={applied}
+                      onClick={() =>
+                        handleApplyInternship(
+                          internship
+                        )
+                      }
+                    >
+
+                      {applied
+                        ? '✓ Applied'
+                        : 'Apply'}
+
+                    </button>
 
                   </div>
 
                 </div>
 
+              )
 
-                <h3>
-                  {internship.title}
-                </h3>
-
-
-                <p className="recommendation-company">
-                  🏢 {internship.company}
-                </p>
-
-
-                <div className="recommendation-meta">
-
-                  <span>
-                    📍 {internship.location}
-                  </span>
-
-                  <span>
-                    💼 {internship.mode}
-                  </span>
-
-                  <span>
-                    ◷ {internship.duration}
-                  </span>
-
-                </div>
-
-
-                <div className="recommended-skills">
-
-                  {internship.skills.map(
-                    (skill, index) => (
-
-                      <span
-                        key={index}
-                        className={
-                          skill.status === 'matched'
-                            ? 'skill-matched'
-                            : 'skill-missing'
-                        }
-                      >
-
-                        {skill.status === 'matched'
-                          ? '✓'
-                          : '⚠'}
-
-                        {' '}
-
-                        {skill.name}
-
-                      </span>
-
-                    )
-                  )}
-
-                </div>
-
-
-                <div className="recommendation-actions">
-
-                  <button
-                    className="secondary-action-btn"
-                    type="button"
-                    onClick={() =>
-                      handleViewInternship(
-                        internship
-                      )
-                    }
-                  >
-                    View Details
-                  </button>
-
-
-                  <button
-                    className={
-                      applied
-                        ? 'primary-action-btn applied'
-                        : 'primary-action-btn'
-                    }
-                    type="button"
-                    disabled={applied}
-                    onClick={() =>
-                      handleApplyInternship(
-                        internship
-                      )
-                    }
-                  >
-
-                    {applied
-                      ? '✓ Applied'
-                      : 'Apply'}
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            )
-
-          })}
+            }
+          )}
 
         </div>
 
@@ -768,106 +841,114 @@ function Recommendations() {
 
         <div className="recommendation-grid">
 
-          {jobs.map((job) => {
+          {jobs.map(
+            (job) => {
 
-            const applied =
-              isJobApplied(job.id)
+              const applied =
+                isApplied(
+                  'Job',
+                  job.id
+                )
 
-            return (
 
-              <div
-                className="job-recommendation-card"
-                key={job.id}
-              >
+              return (
 
-                <div className="job-card-top">
+                <div
+                  className="job-recommendation-card"
+                  key={job.id}
+                >
 
-                  <span className="job-label">
-                    Job
-                  </span>
+                  <div className="job-card-top">
 
-                  <div className="match-score">
+                    <span className="job-label">
+                      Job
+                    </span>
 
-                    <strong>
-                      {job.match}%
-                    </strong>
+                    <div className="match-score">
+
+                      <strong>
+                        {job.match}%
+                      </strong>
+
+                      <span>
+                        Match
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <h3>
+                    {job.title}
+                  </h3>
+
+
+                  <p className="recommendation-company">
+                    🏢 {job.company}
+                  </p>
+
+
+                  <div className="recommendation-meta">
 
                     <span>
-                      Match
+                      📍 {job.location}
                     </span>
+
+                    <span>
+                      💼 {job.mode}
+                    </span>
+
+                  </div>
+
+
+                  <div className="job-salary">
+                    💰 {job.salary}
+                  </div>
+
+
+                  <div className="recommendation-actions">
+
+                    <button
+                      className="secondary-action-btn"
+                      type="button"
+                      onClick={() =>
+                        handleViewJob(job)
+                      }
+                    >
+                      View Details
+                    </button>
+
+
+                    <button
+                      className={
+                        applied
+                          ? 'primary-action-btn applied'
+                          : 'primary-action-btn'
+                      }
+                      type="button"
+                      disabled={applied}
+                      onClick={() =>
+                        handleApplyJob(
+                          job
+                        )
+                      }
+                    >
+
+                      {applied
+                        ? '✓ Applied'
+                        : 'Apply'}
+
+                    </button>
 
                   </div>
 
                 </div>
 
+              )
 
-                <h3>
-                  {job.title}
-                </h3>
-
-
-                <p className="recommendation-company">
-                  🏢 {job.company}
-                </p>
-
-
-                <div className="recommendation-meta">
-
-                  <span>
-                    📍 {job.location}
-                  </span>
-
-                  <span>
-                    💼 {job.mode}
-                  </span>
-
-                </div>
-
-
-                <div className="job-salary">
-                  💰 {job.salary}
-                </div>
-
-
-                <div className="recommendation-actions">
-
-                  <button
-                    className="secondary-action-btn"
-                    type="button"
-                    onClick={() =>
-                      handleViewJob(job)
-                    }
-                  >
-                    View Details
-                  </button>
-
-
-                  <button
-                    className={
-                      applied
-                        ? 'primary-action-btn applied'
-                        : 'primary-action-btn'
-                    }
-                    type="button"
-                    disabled={applied}
-                    onClick={() =>
-                      handleApplyJob(job)
-                    }
-                  >
-
-                    {applied
-                      ? '✓ Applied'
-                      : 'Apply'}
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            )
-
-          })}
+            }
+          )}
 
         </div>
 
@@ -908,83 +989,90 @@ function Recommendations() {
 
         <div className="course-recommendation-grid">
 
-          {courses.map((course) => {
+          {courses.map(
+            (course) => {
 
-            const started =
-              isCourseStarted(course.id)
-
-            return (
-
-              <div
-                className="course-recommendation-card"
-                key={course.id}
-              >
-
-                <div className="course-icon">
-                  📚
-                </div>
+              const started =
+                isCourseStarted(
+                  course.id
+                )
 
 
-                <div className="course-content">
+              return (
 
-                  <span className="course-label">
-                    Recommended Course
-                  </span>
+                <div
+                  className="course-recommendation-card"
+                  key={course.id}
+                >
 
-
-                  <h3>
-                    {course.title}
-                  </h3>
-
-
-                  <p className="course-provider">
-                    {course.provider}
-                  </p>
-
-
-                  <div className="course-meta">
-
-                    <span>
-                      📊 {course.level}
-                    </span>
-
-                    <span>
-                      ◷ {course.duration}
-                    </span>
-
+                  <div className="course-icon">
+                    📚
                   </div>
 
 
-                  <p className="course-reason">
-                    💡 {course.reason}
-                  </p>
+                  <div className="course-content">
+
+                    <span className="course-label">
+                      Recommended Course
+                    </span>
 
 
-                  <button
-                    className={
-                      started
-                        ? 'course-btn started'
-                        : 'course-btn'
-                    }
-                    type="button"
-                    onClick={() =>
-                      setSelectedCourse(course)
-                    }
-                  >
+                    <h3>
+                      {course.title}
+                    </h3>
 
-                    {started
-                      ? '✓ Learning Started'
-                      : 'View Course'}
 
-                  </button>
+                    <p className="course-provider">
+                      {course.provider}
+                    </p>
+
+
+                    <div className="course-meta">
+
+                      <span>
+                        📊 {course.level}
+                      </span>
+
+                      <span>
+                        ◷ {course.duration}
+                      </span>
+
+                    </div>
+
+
+                    <p className="course-reason">
+                      💡 {course.reason}
+                    </p>
+
+
+                    <button
+                      className={
+                        started
+                          ? 'course-btn started'
+                          : 'course-btn'
+                      }
+                      type="button"
+                      onClick={() =>
+                        setSelectedCourse(
+                          course
+                        )
+                      }
+                    >
+
+                      {started
+                        ? '✓ Learning Started'
+                        : 'View Course'}
+
+                    </button>
+
+                  </div>
 
                 </div>
 
-              </div>
+              )
 
-            )
-
-          })}
+            }
+          )}
 
         </div>
 
@@ -1108,6 +1196,7 @@ function Recommendations() {
                 💼 {selectedOpportunity.mode}
               </span>
 
+
               {selectedOpportunity.duration && (
 
                 <span>
@@ -1115,6 +1204,7 @@ function Recommendations() {
                 </span>
 
               )}
+
 
               {selectedOpportunity.salary && (
 
@@ -1219,7 +1309,8 @@ function Recommendations() {
 
                 <button
                   className={
-                    isInternshipApplied(
+                    isApplied(
+                      'Internship',
                       selectedOpportunity.id
                     )
                       ? 'course-start-btn applied'
@@ -1227,7 +1318,8 @@ function Recommendations() {
                   }
                   type="button"
                   disabled={
-                    isInternshipApplied(
+                    isApplied(
+                      'Internship',
                       selectedOpportunity.id
                     )
                   }
@@ -1238,7 +1330,8 @@ function Recommendations() {
                   }
                 >
 
-                  {isInternshipApplied(
+                  {isApplied(
+                    'Internship',
                     selectedOpportunity.id
                   )
                     ? '✓ Applied'
@@ -1250,7 +1343,8 @@ function Recommendations() {
 
                 <button
                   className={
-                    isJobApplied(
+                    isApplied(
+                      'Job',
                       selectedOpportunity.id
                     )
                       ? 'course-start-btn applied'
@@ -1258,7 +1352,8 @@ function Recommendations() {
                   }
                   type="button"
                   disabled={
-                    isJobApplied(
+                    isApplied(
+                      'Job',
                       selectedOpportunity.id
                     )
                   }
@@ -1269,7 +1364,8 @@ function Recommendations() {
                   }
                 >
 
-                  {isJobApplied(
+                  {isApplied(
+                    'Job',
                     selectedOpportunity.id
                   )
                     ? '✓ Applied'

@@ -19,7 +19,7 @@ import Learning from './pages/student/Learning'
 import Portfolio from './pages/student/Portfolio'
 import Documents from './pages/student/Documents'
 import Notifications from './pages/student/Notifications'
-
+import StudentProfile from './pages/student/StudentProfile'
 
 function App() {
 
@@ -1111,100 +1111,12 @@ function App() {
           /* =================================================
              PROFILE
           ================================================= */
+          ) : currentPage === 'profile' ? (
 
-          ) : currentPage ===
-            'profile' ? (
-
-            <div className="dashboard-section">
-
-              <div className="section-title-row">
-
-                <div>
-
-                  <p className="dashboard-tag">
-                    STUDENT PROFILE
-                  </p>
-
-                  <h2>
-                    My Profile
-                  </h2>
-
-                </div>
-
-              </div>
-
-
-              <div className="profile-card">
-
-                <div>
-
-                  <p className="dashboard-tag">
-                    ACCOUNT
-                  </p>
-
-                  <h2>
-                    Student
-                  </h2>
-
-                  <p>
-                    Manage your personal
-                    information, skills and
-                    career profile.
-                  </p>
-
-                </div>
-
-
-                <div className="profile-circle">
-                  S
-                </div>
-
-              </div>
-
-
-              <div className="profile-card">
-
-                <div>
-
-                  <p className="dashboard-tag">
-                    SKILL PROFILE
-                  </p>
-
-                  <h2>
-                    {skillAnswers
-                      ? 'Assessment Completed'
-                      : 'Assessment Pending'}
-                  </h2>
-
-                  <p>
-                    Profile completion:
-                    {' '}
-                    {skillAnswers
-                      ? `${skillAssessmentProgress}%`
-                      : '0%'}
-                  </p>
-
-                </div>
-
-
-                <button
-                  className="complete-profile-btn"
-                  onClick={() =>
-                    navigateTo(
-                      skillAnswers
-                        ? 'skill-profile'
-                        : 'skill-assessment'
-                    )
-                  }
-                >
-                  {skillAnswers
-                    ? 'View Skill Profile'
-                    : 'Complete Assessment'}
-                </button>
-
-              </div>
-
-            </div>
+            <StudentProfile
+              onNavigate={navigateTo}
+            />
+          
 
 
           /* =================================================

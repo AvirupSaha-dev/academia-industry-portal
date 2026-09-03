@@ -88,26 +88,24 @@ function Projects({ onApply }) {
 
   /* =========================
      APPLICATIONS
-     
-     IMPORTANT:
-     We use the SAME localStorage
-     used by Applications.jsx.
-
-     DO NOT use projectApplications
-     anymore.
   ========================= */
 
   const [applications, setApplications] = useState(() => {
 
-    const saved =
-      localStorage.getItem('applications')
-
-    if (!saved) {
-      return []
-    }
-
     try {
-      return JSON.parse(saved)
+
+      const saved =
+        localStorage.getItem('applications')
+
+      if (!saved) return []
+
+      const parsed =
+        JSON.parse(saved)
+
+      return Array.isArray(parsed)
+        ? parsed
+        : []
+
     } catch (error) {
 
       console.error(
@@ -116,22 +114,19 @@ function Projects({ onApply }) {
       )
 
       return []
+
     }
+
   })
 
 
   /* =========================
-     REFRESH APPLICATION DATA
-     
-     This makes sure that if an
-     application was withdrawn,
-     Projects page gets the latest
-     data.
+     LOAD APPLICATIONS
   ========================= */
 
-  useEffect(() => {
+  const loadApplications = () => {
 
-    const loadApplications = () => {
+    try {
 
       const saved =
         localStorage.getItem('applications')
@@ -141,47 +136,69 @@ function Projects({ onApply }) {
         setApplications([])
 
         return
+
       }
 
-      try {
+      const parsed =
+        JSON.parse(saved)
 
-        const parsed =
-          JSON.parse(saved)
+      setApplications(
+        Array.isArray(parsed)
+          ? parsed
+          : []
+      )
 
-        setApplications(
-          Array.isArray(parsed)
-            ? parsed
-            : []
-        )
+    } catch (error) {
 
-      } catch (error) {
+      console.error(
+        'Failed to load applications:',
+        error
+      )
 
-        console.error(
-          'Failed to refresh applications:',
-          error
-        )
+      setApplications([])
 
-        setApplications([])
-      }
     }
 
+  }
+
+
+  /* =========================
+     SYNC APPLICATIONS
+  ========================= */
+
+  useEffect(() => {
 
     loadApplications()
-
-
-    /* Listen for changes from other
-       browser tabs/windows */
 
     window.addEventListener(
       'storage',
       loadApplications
     )
 
+    window.addEventListener(
+      'applicationsUpdated',
+      loadApplications
+    )
+
+    window.addEventListener(
+      'focus',
+      loadApplications
+    )
 
     return () => {
 
       window.removeEventListener(
         'storage',
+        loadApplications
+      )
+
+      window.removeEventListener(
+        'applicationsUpdated',
+        loadApplications
+      )
+
+      window.removeEventListener(
+        'focus',
         loadApplications
       )
 
@@ -191,7 +208,7 @@ function Projects({ onApply }) {
 
 
   /* =========================
-     CHECK IF PROJECT IS APPLIED
+     CHECK APPLIED
   ========================= */
 
   const isProjectApplied = (projectId) => {
@@ -200,9 +217,10 @@ function Projects({ onApply }) {
       (application) =>
         String(application.id) ===
           String(projectId) &&
-        String(application.type).toLowerCase() ===
+        String(application.type || '').toLowerCase() ===
           'project'
     )
+
   }
 
 
@@ -216,7 +234,6 @@ function Projects({ onApply }) {
       const searchText =
         search.toLowerCase().trim()
 
-
       const matchesSearch =
 
         project.title
@@ -226,6 +243,12 @@ function Projects({ onApply }) {
         ||
 
         project.company
+          .toLowerCase()
+          .includes(searchText)
+
+        ||
+
+        project.location
           .toLowerCase()
           .includes(searchText)
 
@@ -259,176 +282,215 @@ function Projects({ onApply }) {
 
 
   /* =========================
-     APPLY FOR PROJECT
+     APPLY PROJECT
   ========================= */
 
   const handleApply = (project) => {
 
-    /* Always check the latest
-       localStorage before applying */
+    try {
 
-    let currentApplications = []
+      /* Always read latest data */
 
-    const saved =
-      localStorage.getItem('applications')
+      const saved =
+        localStorage.getItem('applications')
 
+      let currentApplications = []
 
-    if (saved) {
+      if (saved) {
 
-      try {
-
-        currentApplications =
+        const parsed =
           JSON.parse(saved)
 
-      } catch (error) {
+        if (Array.isArray(parsed)) {
 
-        console.error(
-          'Failed to read applications:',
-          error
-        )
+          currentApplications =
+            parsed
 
-        currentApplications = []
+        }
+
       }
 
-    }
+
+      /* =========================
+         DUPLICATE CHECK
+      ========================= */
+
+      const alreadyApplied =
+        currentApplications.some(
+          (application) =>
+
+            String(application.id) ===
+              String(project.id) &&
+
+            String(application.type || '').toLowerCase() ===
+              'project'
+
+        )
 
 
-    /* =========================
-       DUPLICATE CHECK
-       
-       Same project cannot be
-       applied twice while the
-       application exists.
-    ========================= */
+      if (alreadyApplied) {
 
-    const alreadyApplied =
-      currentApplications.some(
-        (application) =>
-          String(application.id) ===
-            String(project.id) &&
-          String(application.type).toLowerCase() ===
-            'project'
+        setApplications(
+          currentApplications
+        )
+
+        alert(
+          'You have already applied for this project.'
+        )
+
+        return
+
+      }
+
+
+      /* =========================
+         UNIQUE APPLICATION ID
+      ========================= */
+
+      const applicationId =
+        `project-${project.id}`
+
+
+      /* =========================
+         APPLICATION OBJECT
+      ========================= */
+
+      const newApplication = {
+
+        applicationId,
+
+        id:
+          project.id,
+
+        type:
+          'Project',
+
+        title:
+          project.title,
+
+        company:
+          project.company,
+
+        location:
+          project.location,
+
+        mode:
+          project.location === 'Remote'
+            ? 'Remote'
+            : project.location === 'Hybrid'
+              ? 'Hybrid'
+              : 'On-site',
+
+        duration:
+          project.duration,
+
+        salary:
+          '',
+
+        stipend:
+          '',
+
+        skills:
+          project.skills || [],
+
+        description:
+          project.description || '',
+
+        status:
+          'Applied',
+
+        appliedDate:
+          new Date().toLocaleDateString(
+            'en-IN',
+            {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            }
+          )
+
+      }
+
+
+      /* =========================
+         SAVE
+      ========================= */
+
+      const updatedApplications = [
+
+        ...currentApplications,
+
+        newApplication
+
+      ]
+
+
+      localStorage.setItem(
+        'applications',
+        JSON.stringify(
+          updatedApplications
+        )
       )
 
 
-    if (alreadyApplied) {
+      /* =========================
+         UPDATE STATE
+      ========================= */
 
-      alert(
-        'You have already applied for this project.'
-      )
-
-      return
-    }
-
-
-    /* =========================
-       APPLICATION OBJECT
-    ========================= */
-
-    const newApplication = {
-
-      id: project.id,
-
-      title: project.title,
-
-      company: project.company,
-
-      location: project.location,
-
-      duration: project.duration,
-
-      skills: project.skills || [],
-
-      description:
-        project.description || '',
-
-      type: 'Project',
-
-      status: 'Applied',
-
-      appliedDate:
-        new Date().toLocaleDateString(),
-
-    }
-
-
-    /* =========================
-       UPDATE LOCAL STATE
-    ========================= */
-
-    const updatedApplications = [
-
-      ...currentApplications,
-
-      newApplication,
-
-    ]
-
-
-    setApplications(
-      updatedApplications
-    )
-
-
-    /* =========================
-       SAVE TO SAME STORAGE
-       
-       This is the important fix.
-    ========================= */
-
-    localStorage.setItem(
-      'applications',
-      JSON.stringify(
+      setApplications(
         updatedApplications
       )
-    )
 
 
-    /* =========================
-       SEND TO PARENT APP
-    ========================= */
+      /* =========================
+         NOTIFY OTHER PAGES
+      ========================= */
 
-    if (onApply) {
+      window.dispatchEvent(
+        new Event(
+          'applicationsUpdated'
+        )
+      )
 
-      onApply(
-        newApplication
+
+      /* =========================
+         PARENT CALLBACK
+      ========================= */
+
+      if (onApply) {
+
+        onApply(
+          newApplication
+        )
+
+      }
+
+
+      alert(
+        `Application submitted for ${project.title}!`
+      )
+
+    } catch (error) {
+
+      console.error(
+        'Failed to apply for project:',
+        error
+      )
+
+      alert(
+        'Something went wrong while applying.'
       )
 
     }
 
-
-    alert(
-      `Application submitted for ${project.title}!`
-    )
-
   }
-
-
-  /* =========================
-     CLEAR OLD LEGACY STORAGE
-     
-     This removes the old
-     projectApplications data
-     created by the previous code.
-  ========================= */
-
-  useEffect(() => {
-
-    localStorage.removeItem(
-      'projectApplications'
-    )
-
-  }, [])
 
 
   return (
 
     <div className="projects-page">
 
-
-      {/* =========================
-          HEADER
-      ========================= */}
+      {/* HEADER */}
 
       <div className="projects-header">
 
@@ -465,9 +527,7 @@ function Projects({ onApply }) {
       </div>
 
 
-      {/* =========================
-          TOOLBAR
-      ========================= */}
+      {/* TOOLBAR */}
 
       <div className="projects-toolbar">
 
@@ -513,20 +573,14 @@ function Projects({ onApply }) {
       </div>
 
 
-      {/* =========================
-          PROJECT COUNT
-      ========================= */}
+      {/* RESULT COUNT */}
 
       <p className="project-result-count">
-
         Showing {filteredProjects.length} projects
-
       </p>
 
 
-      {/* =========================
-          PROJECT GRID
-      ========================= */}
+      {/* PROJECT GRID */}
 
       <div className="projects-grid">
 
@@ -546,11 +600,6 @@ function Projects({ onApply }) {
                 key={project.id}
               >
 
-
-                {/* =========================
-                    TOP
-                ========================= */}
-
                 <div className="project-top">
 
                   <span className="project-label">
@@ -567,29 +616,15 @@ function Projects({ onApply }) {
                 </div>
 
 
-                {/* =========================
-                    TITLE
-                ========================= */}
-
                 <h2>
                   {project.title}
                 </h2>
 
 
-                {/* =========================
-                    COMPANY
-                ========================= */}
-
                 <p className="company-name">
-
                   🏢 {project.company}
-
                 </p>
 
-
-                {/* =========================
-                    META
-                ========================= */}
 
                 <div className="project-meta">
 
@@ -603,10 +638,6 @@ function Projects({ onApply }) {
 
                 </div>
 
-
-                {/* =========================
-                    SKILLS
-                ========================= */}
 
                 <div className="skills">
 
@@ -623,20 +654,10 @@ function Projects({ onApply }) {
                 </div>
 
 
-                {/* =========================
-                    DESCRIPTION
-                ========================= */}
-
                 <p className="project-description">
-
                   {project.description}
-
                 </p>
 
-
-                {/* =========================
-                    APPLY BUTTON
-                ========================= */}
 
                 <button
                   type="button"
@@ -657,7 +678,6 @@ function Projects({ onApply }) {
 
                 </button>
 
-
               </div>
 
             )
@@ -668,9 +688,7 @@ function Projects({ onApply }) {
       </div>
 
 
-      {/* =========================
-          EMPTY STATE
-      ========================= */}
+      {/* EMPTY */}
 
       {filteredProjects.length === 0 && (
 
@@ -694,6 +712,5 @@ function Projects({ onApply }) {
   )
 
 }
-
 
 export default Projects
