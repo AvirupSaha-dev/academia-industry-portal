@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Projects.css'
 
 function Projects({ onApply }) {
+
+  /* =========================
+     PROJECT DATA
+  ========================= */
 
   const projects = [
     {
@@ -14,6 +18,7 @@ function Projects({ onApply }) {
       description:
         'Build an AI-based analytics system to analyze student performance and provide useful insights.',
     },
+
     {
       id: 'project-2',
       title: 'Smart Healthcare Prediction',
@@ -24,6 +29,7 @@ function Projects({ onApply }) {
       description:
         'Develop a machine learning model for healthcare prediction and data analysis.',
     },
+
     {
       id: 'project-3',
       title: 'E-Commerce Recommendation System',
@@ -34,6 +40,7 @@ function Projects({ onApply }) {
       description:
         'Create a recommendation system that suggests products based on user preferences.',
     },
+
     {
       id: 'project-4',
       title: 'Campus Management System',
@@ -44,6 +51,7 @@ function Projects({ onApply }) {
       description:
         'Develop a modern platform to manage campus activities, students and academic information.',
     },
+
     {
       id: 'project-5',
       title: 'Student Performance Prediction',
@@ -54,6 +62,7 @@ function Projects({ onApply }) {
       description:
         'Develop a machine learning model to predict student academic performance.',
     },
+
     {
       id: 'project-6',
       title: 'AI Chatbot for Students',
@@ -66,68 +75,365 @@ function Projects({ onApply }) {
     },
   ]
 
+
+  /* =========================
+     SEARCH & FILTER
+  ========================= */
+
   const [search, setSearch] = useState('')
-  const [locationFilter, setLocationFilter] = useState('All Projects')
-  const [appliedProjects, setAppliedProjects] = useState(() => {
-    const saved = localStorage.getItem('projectApplications')
-    return saved ? JSON.parse(saved) : []
-  })
 
-  const filteredProjects = projects.filter((project) => {
+  const [locationFilter, setLocationFilter] =
+    useState('All Projects')
 
-    const searchText = search.toLowerCase()
 
-    const matchesSearch =
-      project.title.toLowerCase().includes(searchText) ||
-      project.company.toLowerCase().includes(searchText) ||
-      project.skills.some((skill) =>
-        skill.toLowerCase().includes(searchText)
+  /* =========================
+     APPLICATIONS
+     
+     IMPORTANT:
+     We use the SAME localStorage
+     used by Applications.jsx.
+
+     DO NOT use projectApplications
+     anymore.
+  ========================= */
+
+  const [applications, setApplications] = useState(() => {
+
+    const saved =
+      localStorage.getItem('applications')
+
+    if (!saved) {
+      return []
+    }
+
+    try {
+      return JSON.parse(saved)
+    } catch (error) {
+
+      console.error(
+        'Failed to load applications:',
+        error
       )
 
-    const matchesLocation =
-      locationFilter === 'All Projects' ||
-      project.location === locationFilter
-
-    return matchesSearch && matchesLocation
+      return []
+    }
   })
+
+
+  /* =========================
+     REFRESH APPLICATION DATA
+     
+     This makes sure that if an
+     application was withdrawn,
+     Projects page gets the latest
+     data.
+  ========================= */
+
+  useEffect(() => {
+
+    const loadApplications = () => {
+
+      const saved =
+        localStorage.getItem('applications')
+
+      if (!saved) {
+
+        setApplications([])
+
+        return
+      }
+
+      try {
+
+        const parsed =
+          JSON.parse(saved)
+
+        setApplications(
+          Array.isArray(parsed)
+            ? parsed
+            : []
+        )
+
+      } catch (error) {
+
+        console.error(
+          'Failed to refresh applications:',
+          error
+        )
+
+        setApplications([])
+      }
+    }
+
+
+    loadApplications()
+
+
+    /* Listen for changes from other
+       browser tabs/windows */
+
+    window.addEventListener(
+      'storage',
+      loadApplications
+    )
+
+
+    return () => {
+
+      window.removeEventListener(
+        'storage',
+        loadApplications
+      )
+
+    }
+
+  }, [])
+
+
+  /* =========================
+     CHECK IF PROJECT IS APPLIED
+  ========================= */
+
+  const isProjectApplied = (projectId) => {
+
+    return applications.some(
+      (application) =>
+        String(application.id) ===
+          String(projectId) &&
+        String(application.type).toLowerCase() ===
+          'project'
+    )
+  }
+
+
+  /* =========================
+     SEARCH + FILTER
+  ========================= */
+
+  const filteredProjects =
+    projects.filter((project) => {
+
+      const searchText =
+        search.toLowerCase().trim()
+
+
+      const matchesSearch =
+
+        project.title
+          .toLowerCase()
+          .includes(searchText)
+
+        ||
+
+        project.company
+          .toLowerCase()
+          .includes(searchText)
+
+        ||
+
+        project.skills.some(
+          (skill) =>
+            skill
+              .toLowerCase()
+              .includes(searchText)
+        )
+
+
+      const matchesLocation =
+
+        locationFilter ===
+          'All Projects'
+
+        ||
+
+        project.location ===
+          locationFilter
+
+
+      return (
+        matchesSearch &&
+        matchesLocation
+      )
+
+    })
+
+
+  /* =========================
+     APPLY FOR PROJECT
+  ========================= */
 
   const handleApply = (project) => {
 
-    if (appliedProjects.includes(project.id)) {
-      alert('You have already applied for this project.')
+    /* Always check the latest
+       localStorage before applying */
+
+    let currentApplications = []
+
+    const saved =
+      localStorage.getItem('applications')
+
+
+    if (saved) {
+
+      try {
+
+        currentApplications =
+          JSON.parse(saved)
+
+      } catch (error) {
+
+        console.error(
+          'Failed to read applications:',
+          error
+        )
+
+        currentApplications = []
+      }
+
+    }
+
+
+    /* =========================
+       DUPLICATE CHECK
+       
+       Same project cannot be
+       applied twice while the
+       application exists.
+    ========================= */
+
+    const alreadyApplied =
+      currentApplications.some(
+        (application) =>
+          String(application.id) ===
+            String(project.id) &&
+          String(application.type).toLowerCase() ===
+            'project'
+      )
+
+
+    if (alreadyApplied) {
+
+      alert(
+        'You have already applied for this project.'
+      )
+
       return
     }
 
-    const updatedApplications = [
-      ...appliedProjects,
-      project.id,
-    ]
 
-    setAppliedProjects(updatedApplications)
+    /* =========================
+       APPLICATION OBJECT
+    ========================= */
 
-    localStorage.setItem(
-      'projectApplications',
-      JSON.stringify(updatedApplications)
-    )
+    const newApplication = {
 
-    if (onApply) {
-      onApply({
-        ...project,
-        type: 'Project',
-        status: 'Applied',
-      })
+      id: project.id,
+
+      title: project.title,
+
+      company: project.company,
+
+      location: project.location,
+
+      duration: project.duration,
+
+      skills: project.skills || [],
+
+      description:
+        project.description || '',
+
+      type: 'Project',
+
+      status: 'Applied',
+
+      appliedDate:
+        new Date().toLocaleDateString(),
+
     }
 
-    alert(`Application submitted for ${project.title}!`)
+
+    /* =========================
+       UPDATE LOCAL STATE
+    ========================= */
+
+    const updatedApplications = [
+
+      ...currentApplications,
+
+      newApplication,
+
+    ]
+
+
+    setApplications(
+      updatedApplications
+    )
+
+
+    /* =========================
+       SAVE TO SAME STORAGE
+       
+       This is the important fix.
+    ========================= */
+
+    localStorage.setItem(
+      'applications',
+      JSON.stringify(
+        updatedApplications
+      )
+    )
+
+
+    /* =========================
+       SEND TO PARENT APP
+    ========================= */
+
+    if (onApply) {
+
+      onApply(
+        newApplication
+      )
+
+    }
+
+
+    alert(
+      `Application submitted for ${project.title}!`
+    )
+
   }
 
+
+  /* =========================
+     CLEAR OLD LEGACY STORAGE
+     
+     This removes the old
+     projectApplications data
+     created by the previous code.
+  ========================= */
+
+  useEffect(() => {
+
+    localStorage.removeItem(
+      'projectApplications'
+    )
+
+  }, [])
+
+
   return (
+
     <div className="projects-page">
 
-      {/* HEADER */}
+
+      {/* =========================
+          HEADER
+      ========================= */}
+
       <div className="projects-header">
 
         <div>
+
           <p className="page-tag">
             OPPORTUNITIES
           </p>
@@ -137,11 +443,15 @@ function Projects({ onApply }) {
           </h1>
 
           <p className="page-description">
-            Explore projects and build real-world industry experience.
+            Explore projects and build
+            real-world industry experience.
           </p>
+
         </div>
 
+
         <div className="project-count">
+
           <strong>
             {projects.length}
           </strong>
@@ -149,12 +459,16 @@ function Projects({ onApply }) {
           <span>
             Available Projects
           </span>
+
         </div>
 
       </div>
 
 
-      {/* TOOLBAR */}
+      {/* =========================
+          TOOLBAR
+      ========================= */}
+
       <div className="projects-toolbar">
 
         <input
@@ -162,150 +476,224 @@ function Projects({ onApply }) {
           placeholder="Search projects, skills or companies..."
           className="search-input"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
         />
+
 
         <select
           className="filter-select"
           value={locationFilter}
-          onChange={(e) => setLocationFilter(e.target.value)}
+          onChange={(e) =>
+            setLocationFilter(
+              e.target.value
+            )
+          }
         >
-          <option>
+
+          <option value="All Projects">
             All Projects
           </option>
 
-          <option>
+          <option value="Remote">
             Remote
           </option>
 
-          <option>
+          <option value="Kolkata">
             Kolkata
           </option>
 
-          <option>
+          <option value="Hybrid">
             Hybrid
           </option>
+
         </select>
 
       </div>
 
 
-      {/* PROJECT COUNT */}
+      {/* =========================
+          PROJECT COUNT
+      ========================= */}
+
       <p className="project-result-count">
+
         Showing {filteredProjects.length} projects
+
       </p>
 
 
-      {/* PROJECT GRID */}
+      {/* =========================
+          PROJECT GRID
+      ========================= */}
+
       <div className="projects-grid">
 
-        {filteredProjects.map((project) => {
+        {filteredProjects.map(
+          (project) => {
 
-          const isApplied =
-            appliedProjects.includes(project.id)
-
-          return (
-            <div
-              className="project-card"
-              key={project.id}
-            >
-
-              {/* TOP */}
-              <div className="project-top">
-
-                <span className="project-label">
-                  Project
-                </span>
-
-                <button className="heart-btn">
-                  ♡
-                </button>
-
-              </div>
+            const isApplied =
+              isProjectApplied(
+                project.id
+              )
 
 
-              {/* TITLE */}
-              <h2>
-                {project.title}
-              </h2>
+            return (
 
-
-              {/* COMPANY */}
-              <p className="company-name">
-                🏢 {project.company}
-              </p>
-
-
-              {/* META */}
-              <div className="project-meta">
-
-                <span>
-                  📍 {project.location}
-                </span>
-
-                <span>
-                  ◷ {project.duration}
-                </span>
-
-              </div>
-
-
-              {/* SKILLS */}
-              <div className="skills">
-
-                {project.skills.map((skill, index) => (
-                  <span key={index}>
-                    {skill}
-                  </span>
-                ))}
-
-              </div>
-
-
-              {/* DESCRIPTION */}
-              <p className="project-description">
-                {project.description}
-              </p>
-
-
-              {/* APPLY */}
-              <button
-                className={`view-project-btn ${
-                  isApplied ? 'applied-btn' : ''
-                }`}
-                onClick={() => handleApply(project)}
-                disabled={isApplied}
+              <div
+                className="project-card"
+                key={project.id}
               >
 
-                {isApplied
-                  ? '✓ Applied'
-                  : 'Apply for Project'}
 
-              </button>
+                {/* =========================
+                    TOP
+                ========================= */}
 
-            </div>
-          )
+                <div className="project-top">
 
-        })}
+                  <span className="project-label">
+                    Project
+                  </span>
+
+                  <button
+                    className="heart-btn"
+                    type="button"
+                  >
+                    ♡
+                  </button>
+
+                </div>
+
+
+                {/* =========================
+                    TITLE
+                ========================= */}
+
+                <h2>
+                  {project.title}
+                </h2>
+
+
+                {/* =========================
+                    COMPANY
+                ========================= */}
+
+                <p className="company-name">
+
+                  🏢 {project.company}
+
+                </p>
+
+
+                {/* =========================
+                    META
+                ========================= */}
+
+                <div className="project-meta">
+
+                  <span>
+                    📍 {project.location}
+                  </span>
+
+                  <span>
+                    ◷ {project.duration}
+                  </span>
+
+                </div>
+
+
+                {/* =========================
+                    SKILLS
+                ========================= */}
+
+                <div className="skills">
+
+                  {project.skills.map(
+                    (skill, index) => (
+
+                      <span key={index}>
+                        {skill}
+                      </span>
+
+                    )
+                  )}
+
+                </div>
+
+
+                {/* =========================
+                    DESCRIPTION
+                ========================= */}
+
+                <p className="project-description">
+
+                  {project.description}
+
+                </p>
+
+
+                {/* =========================
+                    APPLY BUTTON
+                ========================= */}
+
+                <button
+                  type="button"
+                  className={`view-project-btn ${
+                    isApplied
+                      ? 'applied-btn'
+                      : ''
+                  }`}
+                  onClick={() =>
+                    handleApply(project)
+                  }
+                  disabled={isApplied}
+                >
+
+                  {isApplied
+                    ? '✓ Applied'
+                    : 'Apply for Project'}
+
+                </button>
+
+
+              </div>
+
+            )
+
+          }
+        )}
 
       </div>
 
 
-      {/* EMPTY */}
+      {/* =========================
+          EMPTY STATE
+      ========================= */}
+
       {filteredProjects.length === 0 && (
+
         <div className="no-projects">
+
           <h3>
             No projects found
           </h3>
 
           <p>
-            Try changing your search or filter.
+            Try changing your search
+            or filter.
           </p>
+
         </div>
+
       )}
 
     </div>
+
   )
+
 }
+
 
 export default Projects

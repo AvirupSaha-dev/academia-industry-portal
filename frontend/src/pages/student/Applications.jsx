@@ -35,6 +35,9 @@ function Applications() {
       JSON.stringify(updatedApplications)
     )
   }
+  window.dispatchEvent(
+  new Event('applicationsUpdated')
+    )
 
   /* =========================
      STATUS COUNTS

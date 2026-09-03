@@ -11,9 +11,9 @@ import Applications from './pages/student/Applications'
 
 function App() {
 
-  /* =========================
-     AUTH STATES
-  ========================= */
+  /* =====================================================
+     AUTH
+  ===================================================== */
 
   const [showLogin, setShowLogin] = useState(false)
   const [showSignup, setShowSignup] = useState(false)
@@ -24,44 +24,50 @@ function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
 
 
-  /* =========================
-     INTERNSHIP
-  ========================= */
+  /* =====================================================
+     SELECTED INTERNSHIP
+  ===================================================== */
 
   const [selectedInternship, setSelectedInternship] = useState(null)
 
 
-  /* =========================
+  /* =====================================================
      SKILL ASSESSMENT
-  ========================= */
+  ===================================================== */
 
   const [skillAnswers, setSkillAnswers] = useState(() => {
 
     const saved = localStorage.getItem('skillAssessment')
 
-    return saved
-      ? JSON.parse(saved)
-      : null
+    try {
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+
   })
 
 
-  /* =========================
+  /* =====================================================
      APPLICATIONS
-  ========================= */
+  ===================================================== */
 
   const [applications, setApplications] = useState(() => {
 
     const saved = localStorage.getItem('applications')
 
-    return saved
-      ? JSON.parse(saved)
-      : []
+    try {
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+
   })
 
 
-  /* =========================
+  /* =====================================================
      SKILL PROGRESS
-  ========================= */
+  ===================================================== */
 
   const getSkillAssessmentProgress = () => {
 
@@ -73,11 +79,17 @@ function App() {
 
     const answeredSkills =
       Object.values(skillAnswers).filter(
-        (answer) => answer !== ''
+        (answer) =>
+          answer !== '' &&
+          answer !== null &&
+          answer !== undefined
       ).length
 
-    return Math.round(
-      (answeredSkills / totalSkills) * 100
+    return Math.min(
+      100,
+      Math.round(
+        (answeredSkills / totalSkills) * 100
+      )
     )
   }
 
@@ -86,9 +98,30 @@ function App() {
     getSkillAssessmentProgress()
 
 
-  /* =========================
+  /* =====================================================
+     SAVE APPLICATION
+  ===================================================== */
+
+  const saveApplication = (newApplication) => {
+
+    const updatedApplications = [
+      ...applications,
+      newApplication
+    ]
+
+    setApplications(updatedApplications)
+
+    localStorage.setItem(
+      'applications',
+      JSON.stringify(updatedApplications)
+    )
+
+  }
+
+
+  /* =====================================================
      SIGNUP
-  ========================= */
+  ===================================================== */
 
   const handleSignup = (e) => {
 
@@ -112,19 +145,20 @@ function App() {
     setIsLoggedIn(true)
 
     setShowSignup(false)
+
   }
 
 
-  /* =========================
+  /* =====================================================
      LOGIN
-  ========================= */
+  ===================================================== */
 
   const handleLogin = (e) => {
 
     e.preventDefault()
 
     // Temporary frontend login
-    // Backend will be connected later
+    // Backend authentication will be connected later.
 
     setUserRole('student')
 
@@ -133,12 +167,13 @@ function App() {
     setIsLoggedIn(true)
 
     setShowLogin(false)
+
   }
 
 
-  /* =========================
+  /* =====================================================
      LOGOUT
-  ========================= */
+  ===================================================== */
 
   const handleLogout = () => {
 
@@ -147,23 +182,49 @@ function App() {
     setUserRole('')
 
     setCurrentPage('dashboard')
+
   }
 
 
-  /* =========================
-     PROJECT APPLICATION
+/* =========================
+    PROJECT APPLICATION
   ========================= */
 
   const handleProjectApply = (project) => {
 
-    const alreadyApplied = applications.some(
-      (application) =>
-        application.id === project.id &&
-        application.type === 'Project'
-    )
+    const isDuplicate = applications.some((application) => {
+
+      const sameType =
+        String(application.type || '').toLowerCase() === 'project'
+
+      const sameId =
+        application.id &&
+        project.id &&
+        String(application.id) === String(project.id)
+
+      const sameTitle =
+        application.title &&
+        project.title &&
+        application.title.trim().toLowerCase() ===
+          project.title.trim().toLowerCase()
+
+      const sameCompany =
+        application.company &&
+        project.company &&
+        application.company.trim().toLowerCase() ===
+          project.company.trim().toLowerCase()
+
+      return (
+        sameType &&
+        (
+          sameId ||
+          (sameTitle && sameCompany)
+        )
+      )
+    })
 
 
-    if (alreadyApplied) {
+    if (isDuplicate) {
 
       alert(
         'You have already applied for this project.'
@@ -181,9 +242,11 @@ function App() {
 
       company: project.company,
 
-      location: project.location,
+      location: project.location || 'Not specified',
 
-      duration: project.duration,
+      duration: project.duration || 'Not specified',
+
+      stipend: project.stipend || 'Not specified',
 
       skills: project.skills || [],
 
@@ -205,16 +268,12 @@ function App() {
     ]
 
 
-    setApplications(
-      updatedApplications
-    )
+    setApplications(updatedApplications)
 
 
     localStorage.setItem(
       'applications',
-      JSON.stringify(
-        updatedApplications
-      )
+      JSON.stringify(updatedApplications)
     )
 
 
@@ -225,19 +284,44 @@ function App() {
 
 
   /* =========================
-     INTERNSHIP APPLICATION
+    INTERNSHIP APPLICATION
   ========================= */
 
   const handleInternshipApply = (internship) => {
 
-    const alreadyApplied = applications.some(
-      (application) =>
-        application.id === internship.id &&
-        application.type === 'Internship'
-    )
+    const isDuplicate = applications.some((application) => {
+
+      const sameType =
+        String(application.type || '').toLowerCase() === 'internship'
+
+      const sameId =
+        application.id &&
+        internship.id &&
+        String(application.id) === String(internship.id)
+
+      const sameTitle =
+        application.title &&
+        internship.title &&
+        application.title.trim().toLowerCase() ===
+          internship.title.trim().toLowerCase()
+
+      const sameCompany =
+        application.company &&
+        internship.company &&
+        application.company.trim().toLowerCase() ===
+          internship.company.trim().toLowerCase()
+
+      return (
+        sameType &&
+        (
+          sameId ||
+          (sameTitle && sameCompany)
+        )
+      )
+    })
 
 
-    if (alreadyApplied) {
+    if (isDuplicate) {
 
       alert(
         'You have already applied for this internship.'
@@ -255,11 +339,17 @@ function App() {
 
       company: internship.company,
 
-      location: internship.location,
+      location:
+        internship.location || 'Not specified',
 
-      duration: internship.duration,
+      duration:
+        internship.duration || 'Not specified',
 
-      skills: internship.skills || [],
+      stipend:
+        internship.stipend || 'Not specified',
+
+      skills:
+        internship.skills || [],
 
       description:
         internship.description || '',
@@ -280,22 +370,31 @@ function App() {
     ]
 
 
-    setApplications(
-      updatedApplications
-    )
+    setApplications(updatedApplications)
 
 
     localStorage.setItem(
       'applications',
-      JSON.stringify(
-        updatedApplications
-      )
+      JSON.stringify(updatedApplications)
     )
 
 
     alert(
       `Application submitted for ${internship.title}!`
     )
+  }
+
+
+  /* =====================================================
+     OPEN INTERNSHIP DETAILS
+  ===================================================== */
+
+  const handleViewInternship = (internship) => {
+
+    setSelectedInternship(internship)
+
+    setCurrentPage('internship-details')
+
   }
 
 
@@ -313,14 +412,22 @@ function App() {
       <div className="dashboard">
 
 
-        {/* =========================
+        {/* =================================================
            SIDEBAR
-        ========================= */}
+        ================================================= */}
 
         <aside className="sidebar">
 
 
-          <div className="dashboard-logo">
+          <div
+            className="dashboard-logo"
+            onClick={() =>
+              setCurrentPage('dashboard')
+            }
+            style={{
+              cursor: 'pointer'
+            }}
+          >
 
             Academia
             <span>Industry</span>
@@ -410,14 +517,13 @@ function App() {
 
             <button
               className={
-                currentPage === 'internships'
+                currentPage === 'internships' ||
+                currentPage === 'internship-details'
                   ? 'active'
                   : ''
               }
               onClick={() =>
-                setCurrentPage(
-                  'internships'
-                )
+                setCurrentPage('internships')
               }
             >
               🎯 Internships
@@ -433,9 +539,7 @@ function App() {
                   : ''
               }
               onClick={() =>
-                setCurrentPage(
-                  'applications'
-                )
+                setCurrentPage('applications')
               }
             >
               📄 Applications
@@ -485,20 +589,20 @@ function App() {
              PROJECTS
           ================================================= */}
 
-          {currentPage === 'projects' ? (
+          {currentPage === 'projects' && (
 
             <Projects
               onApply={handleProjectApply}
             />
 
-          )
+          )}
 
 
-          /* =================================================
+          {/* =================================================
              SKILL ASSESSMENT
-          ================================================= */
+          ================================================= */}
 
-          : currentPage === 'skill-assessment' ? (
+          {currentPage === 'skill-assessment' && (
 
             <SkillAssessment
 
@@ -509,44 +613,45 @@ function App() {
                   JSON.stringify(answers)
                 )
 
-                setSkillAnswers(
-                  answers
-                )
+                setSkillAnswers(answers)
 
                 setCurrentPage(
                   'skill-profile'
                 )
+
               }}
 
             />
 
-          )
+          )}
 
 
-          /* =================================================
+          {/* =================================================
              SKILL PROFILE
-          ================================================= */
+          ================================================= */}
 
-          : currentPage === 'skill-profile' ? (
+          {currentPage === 'skill-profile' && (
 
             <SkillProfile
 
               answers={skillAnswers}
 
-              onNavigate={(page) =>
+              onNavigate={(page) => {
+
                 setCurrentPage(page)
-              }
+
+              }}
 
             />
 
-          )
+          )}
 
 
-          /* =================================================
+          {/* =================================================
              INTERNSHIPS
-          ================================================= */
+          ================================================= */}
 
-          : currentPage === 'internships' ? (
+          {currentPage === 'internships' && (
 
             <Internships
 
@@ -554,28 +659,24 @@ function App() {
                 setCurrentPage('dashboard')
               }
 
-              onViewDetails={(internship) => {
+              onViewDetails={
+                handleViewInternship
+              }
 
-                setSelectedInternship(
-                  internship
-                )
-
-                setCurrentPage(
-                  'internship-details'
-                )
-
-              }}
+              onApply={
+                handleInternshipApply
+              }
 
             />
 
-          )
+          )}
 
 
-          /* =================================================
+          {/* =================================================
              INTERNSHIP DETAILS
-          ================================================= */
+          ================================================= */}
 
-          : currentPage === 'internship-details' ? (
+          {currentPage === 'internship-details' && (
 
             <InternshipDetails
 
@@ -595,14 +696,14 @@ function App() {
 
             />
 
-          )
+          )}
 
 
-          /* =================================================
+          {/* =================================================
              APPLICATIONS
-          ================================================= */
+          ================================================= */}
 
-          : currentPage === 'applications' ? (
+          {currentPage === 'applications' && (
 
             <Applications
 
@@ -612,24 +713,47 @@ function App() {
 
             />
 
-          )
+          )}
 
 
-          /* =================================================
+          {/* =================================================
+             PROFILE
+          ================================================= */}
+
+          {currentPage === 'profile' && (
+
+            <div className="dashboard-placeholder">
+
+              <p className="dashboard-tag">
+                STUDENT PROFILE
+              </p>
+
+              <h1>
+                My Profile
+              </h1>
+
+              <p>
+                Profile management will be added
+                in the next module.
+              </p>
+
+            </div>
+
+          )}
+
+
+          {/* =================================================
              DASHBOARD
-          ================================================= */
+          ================================================= */}
 
-          : (
+          {currentPage === 'dashboard' && (
 
             <>
 
 
-              {/* =========================
-                 DASHBOARD HEADER
-              ========================= */}
+              {/* DASHBOARD HEADER */}
 
               <header className="dashboard-header">
-
 
                 <div>
 
@@ -653,19 +777,27 @@ function App() {
                   S
                 </div>
 
-
               </header>
 
 
-
-              {/* =========================
+              {/* =================================================
                  STAT CARDS
-              ========================= */}
+              ================================================= */}
 
               <section className="stats-grid">
 
 
-                <div className="stat-card">
+                {/* PROJECTS */}
+
+                <div
+                  className="stat-card"
+                  onClick={() =>
+                    setCurrentPage('projects')
+                  }
+                  style={{
+                    cursor: 'pointer'
+                  }}
+                >
 
                   <div className="stat-icon blue">
                     💼
@@ -686,8 +818,19 @@ function App() {
                 </div>
 
 
+                {/* INTERNSHIPS */}
 
-                <div className="stat-card">
+                <div
+                  className="stat-card"
+                  onClick={() =>
+                    setCurrentPage(
+                      'internships'
+                    )
+                  }
+                  style={{
+                    cursor: 'pointer'
+                  }}
+                >
 
                   <div className="stat-icon green">
                     🎯
@@ -708,6 +851,7 @@ function App() {
                 </div>
 
 
+                {/* APPLICATIONS */}
 
                 <div
                   className="stat-card"
@@ -740,8 +884,21 @@ function App() {
                 </div>
 
 
+                {/* PROFILE */}
 
-                <div className="stat-card">
+                <div
+                  className="stat-card"
+                  onClick={() =>
+                    setCurrentPage(
+                      skillAnswers
+                        ? 'skill-profile'
+                        : 'skill-assessment'
+                    )
+                  }
+                  style={{
+                    cursor: 'pointer'
+                  }}
+                >
 
                   <div className="stat-icon purple">
                     ⭐
@@ -754,11 +911,9 @@ function App() {
                     </p>
 
                     <h2>
-
                       {skillAnswers
                         ? `${skillAssessmentProgress}%`
                         : '0%'}
-
                     </h2>
 
                   </div>
@@ -769,16 +924,14 @@ function App() {
               </section>
 
 
-
-              {/* =========================
+              {/* =================================================
                  OPPORTUNITIES
-              ========================= */}
+              ================================================= */}
 
               <section className="dashboard-section">
 
 
                 <div className="section-title-row">
-
 
                   <div>
 
@@ -808,14 +961,12 @@ function App() {
                 </div>
 
 
-
                 <div className="opportunity-grid">
 
 
-                  {/* PROJECT */}
+                  {/* PROJECT 1 */}
 
                   <div className="opportunity-card">
-
 
                     <div className="opportunity-top">
 
@@ -881,15 +1032,12 @@ function App() {
                       View Opportunity
                     </button>
 
-
                   </div>
-
 
 
                   {/* INTERNSHIP */}
 
                   <div className="opportunity-card">
-
 
                     <div className="opportunity-top">
 
@@ -955,15 +1103,12 @@ function App() {
                       View Opportunity
                     </button>
 
-
                   </div>
-
 
 
                   {/* PROJECT 2 */}
 
                   <div className="opportunity-card">
-
 
                     <div className="opportunity-top">
 
@@ -1029,7 +1174,6 @@ function App() {
                       View Opportunity
                     </button>
 
-
                   </div>
 
 
@@ -1039,10 +1183,9 @@ function App() {
               </section>
 
 
-
-              {/* =========================
+              {/* =================================================
                  PROFILE COMPLETION
-              ========================= */}
+              ================================================= */}
 
               <section className="profile-card">
 
@@ -1083,19 +1226,11 @@ function App() {
                     className="complete-profile-btn"
                     onClick={() => {
 
-                      if (skillAnswers) {
-
-                        setCurrentPage(
-                          'skill-profile'
-                        )
-
-                      } else {
-
-                        setCurrentPage(
-                          'skill-assessment'
-                        )
-
-                      }
+                      setCurrentPage(
+                        skillAnswers
+                          ? 'skill-profile'
+                          : 'skill-assessment'
+                      )
 
                     }}
                   >
@@ -1123,6 +1258,7 @@ function App() {
       </div>
 
     )
+
   }
 
 
@@ -1135,18 +1271,16 @@ function App() {
     <div className="app">
 
 
-      {/* =========================
+      {/* =================================================
          NAVBAR
-      ========================= */}
+      ================================================= */}
 
       <header className="navbar">
 
 
         <div className="logo">
-
           Academia
           <span>Industry</span>
-
         </div>
 
 
@@ -1177,7 +1311,6 @@ function App() {
 
         <div className="nav-actions">
 
-
           <button
             className="login-btn"
             onClick={() =>
@@ -1197,29 +1330,25 @@ function App() {
             Sign Up
           </button>
 
-
         </div>
 
 
       </header>
 
 
-
       <main>
 
 
-        {/* =========================
+        {/* =================================================
            HERO
-        ========================= */}
+        ================================================= */}
 
         <section
           className="hero-section"
           id="home"
         >
 
-
           <div className="hero-content">
-
 
             <p className="hero-tag">
               ACADEMIA × INDUSTRY
@@ -1250,7 +1379,6 @@ function App() {
 
             <div className="hero-buttons">
 
-
               <button
                 className="primary-btn"
                 onClick={() =>
@@ -1265,49 +1393,39 @@ function App() {
                 Learn More
               </button>
 
-
             </div>
-
 
           </div>
 
 
-
           <div className="hero-card">
-
 
             <div className="card-icon">
               🎓
             </div>
 
-
             <h2>
               Build. Connect. Grow.
             </h2>
-
 
             <p>
               Discover projects, internships,
               collaborations and career opportunities.
             </p>
 
-
           </div>
-
 
         </section>
 
 
-
-        {/* =========================
+        {/* =================================================
            FEATURES
-        ========================= */}
+        ================================================= */}
 
         <section
           className="features"
           id="projects"
         >
-
 
           <div className="section-heading">
 
@@ -1320,7 +1438,6 @@ function App() {
             </h2>
 
           </div>
-
 
 
           <div className="feature-grid">
@@ -1345,7 +1462,6 @@ function App() {
             </div>
 
 
-
             <div className="feature-card">
 
               <div className="feature-icon">
@@ -1362,7 +1478,6 @@ function App() {
               </p>
 
             </div>
-
 
 
             <div className="feature-card">
@@ -1385,17 +1500,14 @@ function App() {
 
           </div>
 
-
         </section>
-
 
       </main>
 
 
-
-      {/* =========================
+      {/* =================================================
          FOOTER
-      ========================= */}
+      ================================================= */}
 
       <footer>
 
@@ -1406,7 +1518,6 @@ function App() {
       </footer>
 
 
-
       {/* =================================================
          LOGIN MODAL
       ================================================= */}
@@ -1415,9 +1526,7 @@ function App() {
 
         <div className="modal-overlay">
 
-
           <div className="auth-modal">
-
 
             <button
               className="close-btn"
@@ -1440,7 +1549,6 @@ function App() {
 
 
             <form onSubmit={handleLogin}>
-
 
               <label>
                 Email
@@ -1471,7 +1579,6 @@ function App() {
                 Login
               </button>
 
-
             </form>
 
 
@@ -1494,14 +1601,11 @@ function App() {
 
             </p>
 
-
           </div>
-
 
         </div>
 
       )}
-
 
 
       {/* =================================================
@@ -1512,9 +1616,7 @@ function App() {
 
         <div className="modal-overlay">
 
-
           <div className="auth-modal">
-
 
             <button
               className="close-btn"
@@ -1537,7 +1639,6 @@ function App() {
 
 
             <form onSubmit={handleSignup}>
-
 
               <label>
                 Full Name
@@ -1605,7 +1706,6 @@ function App() {
                   Institution
                 </option>
 
-
               </select>
 
 
@@ -1615,7 +1715,6 @@ function App() {
               >
                 Create Account
               </button>
-
 
             </form>
 
@@ -1639,18 +1738,16 @@ function App() {
 
             </p>
 
-
           </div>
-
 
         </div>
 
       )}
 
-
     </div>
 
   )
+
 }
 
 
