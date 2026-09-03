@@ -4,6 +4,7 @@ import './App.css'
 import Projects from './Projects'
 import SkillAssessment from './pages/student/SkillAssessment'
 import SkillProfile from './pages/student/SkillProfile'
+import SkillGap from './pages/student/SkillGap'
 import Internships from './pages/student/Internships'
 import InternshipDetails from './pages/student/InternshipDetails'
 import Applications from './pages/student/Applications'
@@ -11,63 +12,35 @@ import Applications from './pages/student/Applications'
 
 function App() {
 
-  /* =====================================================
-     AUTH
-  ===================================================== */
-
   const [showLogin, setShowLogin] = useState(false)
   const [showSignup, setShowSignup] = useState(false)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   const [userRole, setUserRole] = useState('')
 
-  const [currentPage, setCurrentPage] = useState('dashboard')
+  const [currentPage, setCurrentPage] =
+    useState('dashboard')
+
+  const [selectedInternship, setSelectedInternship] =
+    useState(null)
+
+  const [skillAnswers, setSkillAnswers] =
+    useState(() => {
+
+      const saved =
+        localStorage.getItem('skillAssessment')
+
+      return saved
+        ? JSON.parse(saved)
+        : null
+
+    })
 
 
-  /* =====================================================
-     SELECTED INTERNSHIP
-  ===================================================== */
-
-  const [selectedInternship, setSelectedInternship] = useState(null)
-
-
-  /* =====================================================
-     SKILL ASSESSMENT
-  ===================================================== */
-
-  const [skillAnswers, setSkillAnswers] = useState(() => {
-
-    const saved = localStorage.getItem('skillAssessment')
-
-    try {
-      return saved ? JSON.parse(saved) : null
-    } catch {
-      return null
-    }
-
-  })
-
-
-  /* =====================================================
-     APPLICATIONS
-  ===================================================== */
-
-  const [applications, setApplications] = useState(() => {
-
-    const saved = localStorage.getItem('applications')
-
-    try {
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-
-  })
-
-
-  /* =====================================================
-     SKILL PROGRESS
-  ===================================================== */
+  /* =========================
+     SKILL ASSESSMENT PROGRESS
+  ========================= */
 
   const getSkillAssessmentProgress = () => {
 
@@ -79,18 +52,13 @@ function App() {
 
     const answeredSkills =
       Object.values(skillAnswers).filter(
-        (answer) =>
-          answer !== '' &&
-          answer !== null &&
-          answer !== undefined
+        (answer) => answer !== ''
       ).length
 
-    return Math.min(
-      100,
-      Math.round(
-        (answeredSkills / totalSkills) * 100
-      )
+    return Math.round(
+      (answeredSkills / totalSkills) * 100
     )
+
   }
 
 
@@ -98,45 +66,31 @@ function App() {
     getSkillAssessmentProgress()
 
 
-  /* =====================================================
-     SAVE APPLICATION
-  ===================================================== */
-
-  const saveApplication = (newApplication) => {
-
-    const updatedApplications = [
-      ...applications,
-      newApplication
-    ]
-
-    setApplications(updatedApplications)
-
-    localStorage.setItem(
-      'applications',
-      JSON.stringify(updatedApplications)
-    )
-
-  }
-
-
-  /* =====================================================
-     SIGNUP
-  ===================================================== */
+  /* =========================
+     SIGN UP
+  ========================= */
 
   const handleSignup = (e) => {
 
     e.preventDefault()
 
-    const formData = new FormData(e.target)
+    const formData =
+      new FormData(e.target)
 
-    const role = formData.get('role')
+    const role =
+      formData.get('role')
+
 
     if (!role) {
 
-      alert('Please select an account type.')
+      alert(
+        'Please select an account type.'
+      )
 
       return
+
     }
+
 
     setUserRole(role)
 
@@ -149,16 +103,16 @@ function App() {
   }
 
 
-  /* =====================================================
+  /* =========================
      LOGIN
-  ===================================================== */
+  ========================= */
 
   const handleLogin = (e) => {
 
     e.preventDefault()
 
     // Temporary frontend login
-    // Backend authentication will be connected later.
+    // Backend API will be connected later
 
     setUserRole('student')
 
@@ -171,9 +125,9 @@ function App() {
   }
 
 
-  /* =====================================================
+  /* =========================
      LOGOUT
-  ===================================================== */
+  ========================= */
 
   const handleLogout = () => {
 
@@ -186,220 +140,8 @@ function App() {
   }
 
 
-/* =========================
-    PROJECT APPLICATION
-  ========================= */
-
-  const handleProjectApply = (project) => {
-
-    const isDuplicate = applications.some((application) => {
-
-      const sameType =
-        String(application.type || '').toLowerCase() === 'project'
-
-      const sameId =
-        application.id &&
-        project.id &&
-        String(application.id) === String(project.id)
-
-      const sameTitle =
-        application.title &&
-        project.title &&
-        application.title.trim().toLowerCase() ===
-          project.title.trim().toLowerCase()
-
-      const sameCompany =
-        application.company &&
-        project.company &&
-        application.company.trim().toLowerCase() ===
-          project.company.trim().toLowerCase()
-
-      return (
-        sameType &&
-        (
-          sameId ||
-          (sameTitle && sameCompany)
-        )
-      )
-    })
-
-
-    if (isDuplicate) {
-
-      alert(
-        'You have already applied for this project.'
-      )
-
-      return
-    }
-
-
-    const newApplication = {
-
-      id: project.id,
-
-      title: project.title,
-
-      company: project.company,
-
-      location: project.location || 'Not specified',
-
-      duration: project.duration || 'Not specified',
-
-      stipend: project.stipend || 'Not specified',
-
-      skills: project.skills || [],
-
-      description: project.description || '',
-
-      type: 'Project',
-
-      status: 'Applied',
-
-      appliedDate:
-        new Date().toLocaleDateString(),
-
-    }
-
-
-    const updatedApplications = [
-      ...applications,
-      newApplication,
-    ]
-
-
-    setApplications(updatedApplications)
-
-
-    localStorage.setItem(
-      'applications',
-      JSON.stringify(updatedApplications)
-    )
-
-
-    alert(
-      `Application submitted for ${project.title}!`
-    )
-  }
-
-
-  /* =========================
-    INTERNSHIP APPLICATION
-  ========================= */
-
-  const handleInternshipApply = (internship) => {
-
-    const isDuplicate = applications.some((application) => {
-
-      const sameType =
-        String(application.type || '').toLowerCase() === 'internship'
-
-      const sameId =
-        application.id &&
-        internship.id &&
-        String(application.id) === String(internship.id)
-
-      const sameTitle =
-        application.title &&
-        internship.title &&
-        application.title.trim().toLowerCase() ===
-          internship.title.trim().toLowerCase()
-
-      const sameCompany =
-        application.company &&
-        internship.company &&
-        application.company.trim().toLowerCase() ===
-          internship.company.trim().toLowerCase()
-
-      return (
-        sameType &&
-        (
-          sameId ||
-          (sameTitle && sameCompany)
-        )
-      )
-    })
-
-
-    if (isDuplicate) {
-
-      alert(
-        'You have already applied for this internship.'
-      )
-
-      return
-    }
-
-
-    const newApplication = {
-
-      id: internship.id,
-
-      title: internship.title,
-
-      company: internship.company,
-
-      location:
-        internship.location || 'Not specified',
-
-      duration:
-        internship.duration || 'Not specified',
-
-      stipend:
-        internship.stipend || 'Not specified',
-
-      skills:
-        internship.skills || [],
-
-      description:
-        internship.description || '',
-
-      type: 'Internship',
-
-      status: 'Applied',
-
-      appliedDate:
-        new Date().toLocaleDateString(),
-
-    }
-
-
-    const updatedApplications = [
-      ...applications,
-      newApplication,
-    ]
-
-
-    setApplications(updatedApplications)
-
-
-    localStorage.setItem(
-      'applications',
-      JSON.stringify(updatedApplications)
-    )
-
-
-    alert(
-      `Application submitted for ${internship.title}!`
-    )
-  }
-
-
   /* =====================================================
-     OPEN INTERNSHIP DETAILS
-  ===================================================== */
-
-  const handleViewInternship = (internship) => {
-
-    setSelectedInternship(internship)
-
-    setCurrentPage('internship-details')
-
-  }
-
-
-  /* =====================================================
-     STUDENT PORTAL
+     STUDENT MODULE
   ===================================================== */
 
   if (
@@ -419,15 +161,9 @@ function App() {
         <aside className="sidebar">
 
 
-          <div
-            className="dashboard-logo"
-            onClick={() =>
-              setCurrentPage('dashboard')
-            }
-            style={{
-              cursor: 'pointer'
-            }}
-          >
+          {/* LOGO */}
+
+          <div className="dashboard-logo">
 
             Academia
             <span>Industry</span>
@@ -435,12 +171,16 @@ function App() {
           </div>
 
 
+          {/* ROLE */}
+
           <div className="sidebar-role">
 
             🎓 Student
 
           </div>
 
+
+          {/* NAVIGATION */}
 
           <nav className="sidebar-nav">
 
@@ -513,17 +253,38 @@ function App() {
             </button>
 
 
-            {/* INTERNSHIPS */}
+            {/* =========================
+               NEW: SKILL GAP
+            ========================= */}
 
             <button
               className={
-                currentPage === 'internships' ||
-                currentPage === 'internship-details'
+                currentPage === 'skill-gap'
                   ? 'active'
                   : ''
               }
               onClick={() =>
-                setCurrentPage('internships')
+                setCurrentPage(
+                  'skill-gap'
+                )
+              }
+            >
+              📉 Skill Gap
+            </button>
+
+
+            {/* INTERNSHIPS */}
+
+            <button
+              className={
+                currentPage === 'internships'
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                setCurrentPage(
+                  'internships'
+                )
               }
             >
               🎯 Internships
@@ -539,7 +300,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                setCurrentPage('applications')
+                setCurrentPage(
+                  'applications'
+                )
               }
             >
               📄 Applications
@@ -555,12 +318,13 @@ function App() {
                   : ''
               }
               onClick={() =>
-                setCurrentPage('profile')
+                setCurrentPage(
+                  'profile'
+                )
               }
             >
               👤 My Profile
             </button>
-
 
           </nav>
 
@@ -589,20 +353,16 @@ function App() {
              PROJECTS
           ================================================= */}
 
-          {currentPage === 'projects' && (
+          {currentPage === 'projects' ? (
 
-            <Projects
-              onApply={handleProjectApply}
-            />
-
-          )}
+            <Projects />
 
 
-          {/* =================================================
+          /* =================================================
              SKILL ASSESSMENT
-          ================================================= */}
+          ================================================= */
 
-          {currentPage === 'skill-assessment' && (
+          ) : currentPage === 'skill-assessment' ? (
 
             <SkillAssessment
 
@@ -613,7 +373,9 @@ function App() {
                   JSON.stringify(answers)
                 )
 
-                setSkillAnswers(answers)
+                setSkillAnswers(
+                  answers
+                )
 
                 setCurrentPage(
                   'skill-profile'
@@ -623,60 +385,61 @@ function App() {
 
             />
 
-          )}
 
-
-          {/* =================================================
+          /* =================================================
              SKILL PROFILE
-          ================================================= */}
+          ================================================= */
 
-          {currentPage === 'skill-profile' && (
+          ) : currentPage === 'skill-profile' ? (
 
             <SkillProfile
-
               answers={skillAnswers}
+            />
 
-              onNavigate={(page) => {
 
-                setCurrentPage(page)
+          /* =================================================
+             NEW: SKILL GAP
+          ================================================= */
+
+          ) : currentPage === 'skill-gap' ? (
+
+            <SkillGap />
+
+
+          /* =================================================
+             INTERNSHIPS
+          ================================================= */
+
+          ) : currentPage === 'internships' ? (
+
+            <Internships
+
+              onBack={() =>
+                setCurrentPage(
+                  'dashboard'
+                )
+              }
+
+              onViewDetails={(internship) => {
+
+                setSelectedInternship(
+                  internship
+                )
+
+                setCurrentPage(
+                  'internship-details'
+                )
 
               }}
 
             />
 
-          )}
 
-
-          {/* =================================================
-             INTERNSHIPS
-          ================================================= */}
-
-          {currentPage === 'internships' && (
-
-            <Internships
-
-              onBack={() =>
-                setCurrentPage('dashboard')
-              }
-
-              onViewDetails={
-                handleViewInternship
-              }
-
-              onApply={
-                handleInternshipApply
-              }
-
-            />
-
-          )}
-
-
-          {/* =================================================
+          /* =================================================
              INTERNSHIP DETAILS
-          ================================================= */}
+          ================================================= */
 
-          {currentPage === 'internship-details' && (
+          ) : currentPage === 'internship-details' ? (
 
             <InternshipDetails
 
@@ -690,68 +453,37 @@ function App() {
                 )
               }
 
-              onApply={
-                handleInternshipApply
-              }
+              onApply={(internship) => {
+
+                console.log(
+                  'Applied for:',
+                  internship.title
+                )
+
+              }}
 
             />
 
-          )}
 
-
-          {/* =================================================
+          /* =================================================
              APPLICATIONS
-          ================================================= */}
+          ================================================= */
 
-          {currentPage === 'applications' && (
+          ) : currentPage === 'applications' ? (
 
-            <Applications
-
-              applications={
-                applications
-              }
-
-            />
-
-          )}
+            <Applications />
 
 
-          {/* =================================================
-             PROFILE
-          ================================================= */}
+          /* =================================================
+             DEFAULT DASHBOARD
+          ================================================= */
 
-          {currentPage === 'profile' && (
-
-            <div className="dashboard-placeholder">
-
-              <p className="dashboard-tag">
-                STUDENT PROFILE
-              </p>
-
-              <h1>
-                My Profile
-              </h1>
-
-              <p>
-                Profile management will be added
-                in the next module.
-              </p>
-
-            </div>
-
-          )}
-
-
-          {/* =================================================
-             DASHBOARD
-          ================================================= */}
-
-          {currentPage === 'dashboard' && (
+          ) : (
 
             <>
 
 
-              {/* DASHBOARD HEADER */}
+              {/* HEADER */}
 
               <header className="dashboard-header">
 
@@ -789,15 +521,7 @@ function App() {
 
                 {/* PROJECTS */}
 
-                <div
-                  className="stat-card"
-                  onClick={() =>
-                    setCurrentPage('projects')
-                  }
-                  style={{
-                    cursor: 'pointer'
-                  }}
-                >
+                <div className="stat-card">
 
                   <div className="stat-icon blue">
                     💼
@@ -810,7 +534,7 @@ function App() {
                     </p>
 
                     <h2>
-                      6
+                      12
                     </h2>
 
                   </div>
@@ -820,17 +544,7 @@ function App() {
 
                 {/* INTERNSHIPS */}
 
-                <div
-                  className="stat-card"
-                  onClick={() =>
-                    setCurrentPage(
-                      'internships'
-                    )
-                  }
-                  style={{
-                    cursor: 'pointer'
-                  }}
-                >
+                <div className="stat-card">
 
                   <div className="stat-icon green">
                     🎯
@@ -843,7 +557,7 @@ function App() {
                     </p>
 
                     <h2>
-                      3
+                      8
                     </h2>
 
                   </div>
@@ -853,17 +567,7 @@ function App() {
 
                 {/* APPLICATIONS */}
 
-                <div
-                  className="stat-card"
-                  onClick={() =>
-                    setCurrentPage(
-                      'applications'
-                    )
-                  }
-                  style={{
-                    cursor: 'pointer'
-                  }}
-                >
+                <div className="stat-card">
 
                   <div className="stat-icon orange">
                     📄
@@ -876,7 +580,7 @@ function App() {
                     </p>
 
                     <h2>
-                      {applications.length}
+                      4
                     </h2>
 
                   </div>
@@ -886,19 +590,7 @@ function App() {
 
                 {/* PROFILE */}
 
-                <div
-                  className="stat-card"
-                  onClick={() =>
-                    setCurrentPage(
-                      skillAnswers
-                        ? 'skill-profile'
-                        : 'skill-assessment'
-                    )
-                  }
-                  style={{
-                    cursor: 'pointer'
-                  }}
-                >
+                <div className="stat-card">
 
                   <div className="stat-icon purple">
                     ⭐
@@ -911,21 +603,24 @@ function App() {
                     </p>
 
                     <h2>
-                      {skillAnswers
-                        ? `${skillAssessmentProgress}%`
-                        : '0%'}
+
+                      {
+                        skillAnswers
+                          ? `${skillAssessmentProgress}%`
+                          : '0%'
+                      }
+
                     </h2>
 
                   </div>
 
                 </div>
 
-
               </section>
 
 
               {/* =================================================
-                 OPPORTUNITIES
+                 RECOMMENDED OPPORTUNITIES
               ================================================= */}
 
               <section className="dashboard-section">
@@ -957,14 +652,13 @@ function App() {
                     View All
                   </button>
 
-
                 </div>
 
 
                 <div className="opportunity-grid">
 
 
-                  {/* PROJECT 1 */}
+                  {/* PROJECT */}
 
                   <div className="opportunity-card">
 
@@ -984,7 +678,6 @@ function App() {
                     <h3>
                       AI-Based Student Analytics
                     </h3>
-
 
                     <p className="company-name">
                       Tech Innovations Pvt. Ltd.
@@ -1056,7 +749,6 @@ function App() {
                       Frontend Development Intern
                     </h3>
 
-
                     <p className="company-name">
                       Digital Solutions India
                     </p>
@@ -1127,7 +819,6 @@ function App() {
                       Smart Healthcare Prediction
                     </h3>
 
-
                     <p className="company-name">
                       HealthTech Research
                     </p>
@@ -1179,7 +870,6 @@ function App() {
 
                 </div>
 
-
               </section>
 
 
@@ -1215,9 +905,11 @@ function App() {
 
                   <div className="progress-circle">
 
-                    {skillAnswers
-                      ? `${skillAssessmentProgress}%`
-                      : '0%'}
+                    {
+                      skillAnswers
+                        ? `${skillAssessmentProgress}%`
+                        : '0%'
+                    }
 
                   </div>
 
@@ -1226,24 +918,32 @@ function App() {
                     className="complete-profile-btn"
                     onClick={() => {
 
-                      setCurrentPage(
-                        skillAnswers
-                          ? 'skill-profile'
-                          : 'skill-assessment'
-                      )
+                      if (skillAnswers) {
+
+                        setCurrentPage(
+                          'skill-profile'
+                        )
+
+                      } else {
+
+                        setCurrentPage(
+                          'skill-assessment'
+                        )
+
+                      }
 
                     }}
                   >
 
-                    {skillAnswers
-                      ? 'View Skill Profile'
-                      : 'Complete Skill Assessment'}
+                    {
+                      skillAnswers
+                        ? 'View Skill Profile'
+                        : 'Complete Skill Assessment'
+                    }
 
                   </button>
 
-
                 </div>
-
 
               </section>
 
@@ -1251,7 +951,6 @@ function App() {
             </>
 
           )}
-
 
         </main>
 
@@ -1271,16 +970,12 @@ function App() {
     <div className="app">
 
 
-      {/* =================================================
-         NAVBAR
-      ================================================= */}
+      {/* NAVBAR */}
 
       <header className="navbar">
 
-
         <div className="logo">
-          Academia
-          <span>Industry</span>
+          Academia<span>Industry</span>
         </div>
 
 
@@ -1332,16 +1027,15 @@ function App() {
 
         </div>
 
-
       </header>
 
+
+      {/* MAIN */}
 
       <main>
 
 
-        {/* =================================================
-           HERO
-        ================================================= */}
+        {/* HERO */}
 
         <section
           className="hero-section"
@@ -1354,7 +1048,6 @@ function App() {
               ACADEMIA × INDUSTRY
             </p>
 
-
             <h1>
 
               Connecting
@@ -1366,12 +1059,11 @@ function App() {
 
             </h1>
 
-
             <p className="hero-description">
 
-              A platform that connects students,
-              educational institutions, and
-              companies to create meaningful
+              A platform that connects
+              students, educational institutions,
+              and companies to create meaningful
               opportunities and industry-ready talent.
 
             </p>
@@ -1418,9 +1110,7 @@ function App() {
         </section>
 
 
-        {/* =================================================
-           FEATURES
-        ================================================= */}
+        {/* FEATURES */}
 
         <section
           className="features"
@@ -1454,9 +1144,9 @@ function App() {
               </h3>
 
               <p>
-                Find projects, internships and
-                industry opportunities to build
-                your career.
+                Find projects, internships
+                and industry opportunities
+                to build your career.
               </p>
 
             </div>
@@ -1502,12 +1192,11 @@ function App() {
 
         </section>
 
+
       </main>
 
 
-      {/* =================================================
-         FOOTER
-      ================================================= */}
+      {/* FOOTER */}
 
       <footer>
 
@@ -1528,6 +1217,7 @@ function App() {
 
           <div className="auth-modal">
 
+
             <button
               className="close-btn"
               onClick={() =>
@@ -1541,7 +1231,6 @@ function App() {
             <h2>
               Welcome Back
             </h2>
-
 
             <p className="modal-subtitle">
               Login to your AcademiaIndustry account
@@ -1601,6 +1290,7 @@ function App() {
 
             </p>
 
+
           </div>
 
         </div>
@@ -1618,6 +1308,7 @@ function App() {
 
           <div className="auth-modal">
 
+
             <button
               className="close-btn"
               onClick={() =>
@@ -1632,13 +1323,13 @@ function App() {
               Create Account
             </h2>
 
-
             <p className="modal-subtitle">
               Join the AcademiaIndustry community
             </p>
 
 
             <form onSubmit={handleSignup}>
+
 
               <label>
                 Full Name
@@ -1676,7 +1367,6 @@ function App() {
               <label>
                 Account Type
               </label>
-
 
               <select
                 name="role"
@@ -1737,6 +1427,7 @@ function App() {
               </button>
 
             </p>
+
 
           </div>
 
