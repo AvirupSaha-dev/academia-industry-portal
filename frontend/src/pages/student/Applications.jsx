@@ -2,117 +2,74 @@ import { useState } from 'react'
 import './Applications.css'
 
 function Applications() {
-  const [applications, setApplications] = useState(() => {
-    const saved = localStorage.getItem('applications')
 
-    try {
-      return saved ? JSON.parse(saved) : []
-    } catch (error) {
-      console.error('Failed to load applications:', error)
-      return []
-    }
+  const [applications, setApplications] = useState(() => {
+
+    const saved =
+      localStorage.getItem('applications')
+
+    return saved
+      ? JSON.parse(saved)
+      : []
+
   })
 
+
   /* =========================
-     WITHDRAW APPLICATION
+     REMOVE APPLICATION
   ========================= */
 
-  const handleWithdraw = (id) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to withdraw this application?'
-    )
+  const handleRemove = (applicationId) => {
 
-    if (!confirmed) return
-
-    const updatedApplications = applications.filter(
-      (application) => application.id !== id
-    )
-
-    setApplications(updatedApplications)
+    const updated =
+      applications.filter(
+        (application) =>
+          application.applicationId !== applicationId
+      )
 
     localStorage.setItem(
       'applications',
-      JSON.stringify(updatedApplications)
-    )
-  }
-  window.dispatchEvent(
-  new Event('applicationsUpdated')
+      JSON.stringify(updated)
     )
 
-  /* =========================
-     STATUS COUNTS
-  ========================= */
+    setApplications(updated)
 
-  const totalApplications = applications.length
-
-  const underReviewCount = applications.filter(
-    (application) =>
-      application.status === 'Under Review'
-  ).length
-
-  const selectedCount = applications.filter(
-    (application) =>
-      application.status === 'Selected'
-  ).length
-
-  /* =========================
-     TYPE
-  ========================= */
-
-  const getApplicationType = (application) => {
-    if (
-      application.type &&
-      application.type.toLowerCase() === 'project'
-    ) {
-      return 'Project'
-    }
-
-    return 'Internship'
   }
 
-  /* =========================
-     STATUS CLASS
-  ========================= */
-
-  const getStatusClass = (status) => {
-    if (!status) return 'under-review'
-
-    return status
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-  }
 
   return (
+
     <div className="applications-page">
 
-      {/* =========================
-          HEADER
-      ========================= */}
+      {/* HEADER */}
 
       <div className="applications-header">
 
         <div>
+
           <p className="page-tag">
-            MY APPLICATIONS
+            📄 APPLICATIONS
           </p>
 
           <h1>
-            Applications
+            My Applications
           </h1>
 
           <p className="page-description">
-            Track your internship and project applications.
+            Track the internships and jobs you have applied for.
           </p>
+
         </div>
+
 
         <div className="application-count">
 
           <strong>
-            {totalApplications}
+            {applications.length}
           </strong>
 
           <span>
-            Total Applications
+            Applications
           </span>
 
         </div>
@@ -120,305 +77,120 @@ function Applications() {
       </div>
 
 
-      {/* =========================
-          SUMMARY CARDS
-      ========================= */}
+      {/* EMPTY STATE */}
 
-      <div className="application-summary">
+      {applications.length === 0 ? (
 
-        {/* TOTAL */}
-
-        <div className="application-summary-card">
-
-          <div className="application-summary-icon blue">
-            📄
-          </div>
-
-          <div>
-            <p>
-              Total Applications
-            </p>
-
-            <h2>
-              {totalApplications}
-            </h2>
-          </div>
-
-        </div>
-
-
-        {/* UNDER REVIEW */}
-
-        <div className="application-summary-card">
-
-          <div className="application-summary-icon orange">
-            ⏳
-          </div>
-
-          <div>
-            <p>
-              Under Review
-            </p>
-
-            <h2>
-              {underReviewCount}
-            </h2>
-          </div>
-
-        </div>
-
-
-        {/* SELECTED */}
-
-        <div className="application-summary-card">
-
-          <div className="application-summary-icon green">
-            ✓
-          </div>
-
-          <div>
-            <p>
-              Selected
-            </p>
-
-            <h2>
-              {selectedCount}
-            </h2>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* =========================
-          APPLICATION LIST
-      ========================= */}
-
-      {applications.length > 0 ? (
-
-        <div className="applications-list">
-
-          {applications.map((application) => {
-
-            const applicationType =
-              getApplicationType(application)
-
-            return (
-
-              <div
-                className="application-card"
-                key={application.id}
-              >
-
-                {/* =========================
-                    TOP SECTION
-                ========================= */}
-
-                <div className="application-top">
-
-                  <div>
-
-                    {/* PROJECT / INTERNSHIP LABEL */}
-
-                    <span
-                      className={`application-label ${
-                        applicationType.toLowerCase()
-                      }`}
-                    >
-                      {applicationType}
-                    </span>
-
-
-                    {/* TITLE */}
-
-                    <h2>
-                      {application.title}
-                    </h2>
-
-
-                    {/* COMPANY */}
-
-                    <p className="application-company">
-                      🏢 {application.company}
-                    </p>
-
-                  </div>
-
-
-                  {/* STATUS */}
-
-                  <span
-                    className={`application-status ${getStatusClass(
-                      application.status
-                    )}`}
-                  >
-                    {application.status || 'Under Review'}
-                  </span>
-
-                </div>
-
-
-                {/* =========================
-                    DETAILS
-                ========================= */}
-
-                <div className="application-details">
-
-                  {/* LOCATION */}
-
-                  <div>
-
-                    <span>
-                      📍 Location
-                    </span>
-
-                    <strong>
-                      {application.location || 'Not specified'}
-                    </strong>
-
-                  </div>
-
-
-                  {/* WORK TYPE */}
-
-                  <div>
-
-                    <span>
-                      💼 Work Type
-                    </span>
-
-                    <strong>
-                      {application.type || applicationType}
-                    </strong>
-
-                  </div>
-
-
-                  {/* DURATION */}
-
-                  <div>
-
-                    <span>
-                      ◷ Duration
-                    </span>
-
-                    <strong>
-                      {application.duration || 'Not specified'}
-                    </strong>
-
-                  </div>
-
-
-                  {/* STIPEND */}
-
-                  <div>
-
-                    <span>
-                      💰 Stipend
-                    </span>
-
-                    <strong>
-                      {application.stipend || 'Not specified'}
-                    </strong>
-
-                  </div>
-
-                </div>
-
-
-                {/* =========================
-                    SKILLS
-                ========================= */}
-
-                {application.skills &&
-                  application.skills.length > 0 && (
-
-                    <div className="application-skills">
-
-                      {application.skills.map(
-                        (skill, index) => (
-
-                          <span key={index}>
-                            {skill}
-                          </span>
-
-                        )
-                      )}
-
-                    </div>
-
-                  )}
-
-
-                {/* =========================
-                    FOOTER
-                ========================= */}
-
-                <div className="application-footer">
-
-                  <div>
-
-                    <small>
-                      Applied on
-                    </small>
-
-                    <strong>
-                      {application.appliedDate ||
-                        'Recently'}
-                    </strong>
-
-                  </div>
-
-
-                  {/* WITHDRAW */}
-
-                  <button
-                    className="withdraw-btn"
-                    onClick={() =>
-                      handleWithdraw(application.id)
-                    }
-                  >
-                    Withdraw
-                  </button>
-
-                </div>
-
-              </div>
-
-            )
-          })}
-
-        </div>
-
-      ) : (
-
-        /* =========================
-           EMPTY STATE
-        ========================= */
-
-        <div className="applications-empty">
+        <div className="empty-applications">
 
           <div className="empty-icon">
             📄
           </div>
 
           <h2>
-            No applications yet
+            No Applications Yet
           </h2>
 
           <p>
-            You haven't applied to any internships or
-            projects yet. Explore available opportunities
-            and start building your career.
+            You haven't applied to any internship or job yet.
+            Explore recommendations and apply to opportunities
+            that match your skills.
           </p>
+
+        </div>
+
+      ) : (
+
+        <div className="applications-grid">
+
+          {applications.map((application) => (
+
+            <div
+              className="application-card"
+              key={application.applicationId}
+            >
+
+              <div className="application-top">
+
+                <span className="application-type">
+                  {application.type}
+                </span>
+
+                <span className="application-status">
+                  ✓ {application.status}
+                </span>
+
+              </div>
+
+
+              <h2>
+                {application.title}
+              </h2>
+
+
+              <p className="application-company">
+                🏢 {application.company}
+              </p>
+
+
+              <div className="application-info">
+
+                <span>
+                  📍 {application.location}
+                </span>
+
+                <span>
+                  💼 {application.mode}
+                </span>
+
+                {application.duration && (
+                  <span>
+                    ◷ {application.duration}
+                  </span>
+                )}
+
+              </div>
+
+
+              {application.salary && (
+
+                <div className="application-salary">
+                  💰 {application.salary}
+                </div>
+
+              )}
+
+
+              <div className="application-footer">
+
+                <span>
+                  Applied on {application.appliedDate}
+                </span>
+
+                <button
+                  onClick={() =>
+                    handleRemove(
+                      application.applicationId
+                    )
+                  }
+                >
+                  Remove
+                </button>
+
+              </div>
+
+            </div>
+
+          ))}
 
         </div>
 
       )}
 
     </div>
+
   )
+
 }
 
 export default Applications

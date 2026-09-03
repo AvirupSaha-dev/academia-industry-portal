@@ -1,0 +1,991 @@
+/* =====================================================
+   LEARNING PAGE
+===================================================== */
+
+.learning-page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px 38px 60px;
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.learning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 28px;
+}
+
+.learning-tag {
+  margin: 0 0 8px;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.learning-header h1 {
+  margin: 0;
+  color: #172033;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.learning-subtitle {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.learning-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 9px 14px;
+
+  border: 1px solid #dbe4ff;
+  border-radius: 999px;
+
+  background: #f8faff;
+
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+
+/* =====================================================
+   ACTIVE LEARNING CARD
+===================================================== */
+
+.active-learning-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 35px;
+
+  padding: 26px 28px;
+  margin-bottom: 28px;
+
+  background: #ffffff;
+
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.active-learning-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+
+  flex: 1;
+}
+
+.active-icon {
+  width: 54px;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eff6ff;
+  border-radius: 14px;
+
+  font-size: 25px;
+}
+
+.active-label {
+  margin: 0 0 5px;
+
+  color: #2563eb;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.active-learning-left h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.active-provider {
+  margin: 5px 0 12px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.active-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.active-meta span {
+  padding: 6px 9px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+
+  color: #475569;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   ACTIVE PROGRESS
+===================================================== */
+
+.active-learning-right {
+  width: 390px;
+  min-width: 300px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 8px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.progress-info strong {
+  color: #2563eb;
+  font-size: 13px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 9px;
+
+  overflow: hidden;
+
+  background: #e8eef7;
+
+  border-radius: 999px;
+}
+
+.progress-fill {
+  height: 100%;
+
+  background: #2563eb;
+
+  border-radius: 999px;
+
+  transition: width 0.3s ease;
+}
+
+.active-actions {
+  display: flex;
+  gap: 9px;
+
+  margin-top: 14px;
+}
+
+.continue-btn {
+  flex: 1;
+
+  height: 38px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.continue-btn:hover {
+  background: #1d4ed8;
+}
+
+.reset-btn {
+  padding: 0 15px;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background: #f8fafc;
+}
+
+
+/* =====================================================
+   STATISTICS
+===================================================== */
+
+.learning-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+
+  margin-bottom: 36px;
+}
+
+.learning-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.04);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eff6ff;
+
+  border-radius: 10px;
+
+  font-size: 19px;
+}
+
+.learning-stat-card span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.learning-stat-card strong {
+  color: #172033;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+
+/* =====================================================
+   SECTION HEADER
+===================================================== */
+
+.learning-section {
+  margin-top: 5px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  margin-bottom: 18px;
+}
+
+.section-tag {
+  margin: 0 0 5px;
+
+  color: #2563eb;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.section-heading p {
+  margin: 6px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.course-count {
+  padding: 7px 11px;
+
+  border: 1px solid #dbe4ff;
+  border-radius: 7px;
+
+  background: #f8faff;
+
+  color: #2563eb;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   COURSE GRID
+===================================================== */
+
+.learning-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+
+/* =====================================================
+   COURSE CARD
+===================================================== */
+
+.learning-course-card {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 390px;
+
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe6ef;
+
+  border-radius: 14px;
+
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.045);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.learning-course-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #cbd5e1;
+
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+.learning-course-card.active-course {
+  border-color: #93c5fd;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.10);
+}
+
+
+/* =====================================================
+   COURSE TOP
+===================================================== */
+
+.course-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 17px;
+}
+
+.course-main-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eff6ff;
+
+  border-radius: 11px;
+
+  font-size: 20px;
+}
+
+.started-badge {
+  padding: 6px 9px;
+
+  border-radius: 7px;
+
+  background: #ecfdf5;
+
+  color: #059669;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+/* =====================================================
+   COURSE TEXT
+===================================================== */
+
+.course-label {
+  margin: 0 0 5px;
+
+  color: #2563eb;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.learning-course-card h3 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  line-height: 1.35;
+}
+
+.course-provider {
+  margin: 6px 0 9px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.course-description {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 1.55;
+
+  min-height: 52px;
+}
+
+
+/* =====================================================
+   COURSE META
+===================================================== */
+
+.course-meta {
+  display: flex;
+  gap: 7px;
+
+  margin-top: 13px;
+}
+
+.course-meta span {
+  padding: 6px 8px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 6px;
+
+  color: #475569;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   COURSE SKILLS
+===================================================== */
+
+.course-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 13px;
+}
+
+.course-skills span {
+  padding: 5px 7px;
+
+  background: #f1f5f9;
+
+  border-radius: 5px;
+
+  color: #475569;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   COURSE BUTTONS
+===================================================== */
+
+.course-actions {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.view-course-btn,
+.start-course-btn,
+.continue-course-btn {
+  height: 36px;
+
+  border-radius: 7px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.view-course-btn {
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+
+  color: #334155;
+}
+
+.view-course-btn:hover {
+  background: #f8fafc;
+}
+
+.start-course-btn,
+.continue-course-btn {
+  border: 1px solid #2563eb;
+
+  background: #2563eb;
+
+  color: #ffffff;
+}
+
+.start-course-btn:hover,
+.continue-course-btn:hover {
+  background: #1d4ed8;
+}
+
+
+/* =====================================================
+   MODAL OVERLAY
+===================================================== */
+
+.learning-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.58);
+
+  backdrop-filter: blur(5px);
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.learning-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 650px;
+
+  max-height: 88vh;
+
+  overflow-y: auto;
+
+  padding: 30px;
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 25px 70px rgba(15, 23, 42, 0.25);
+}
+
+.modal-close {
+  position: absolute;
+
+  top: 16px;
+  right: 17px;
+
+  width: 32px;
+  height: 32px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #64748b;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: #f8fafc;
+}
+
+.modal-course-icon {
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 13px;
+
+  background: #eff6ff;
+
+  border-radius: 12px;
+
+  font-size: 23px;
+}
+
+.modal-label {
+  margin: 0 0 5px;
+
+  color: #2563eb;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.learning-modal h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.modal-provider {
+  margin: 6px 0 14px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-meta span {
+  padding: 7px 9px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 6px;
+
+  color: #475569;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   MODAL SECTIONS
+===================================================== */
+
+.modal-description,
+.modal-section {
+  padding: 17px 0;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-description h3,
+.modal-section h3 {
+  margin: 0 0 9px;
+
+  color: #1e293b;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.modal-description p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+.modal-skills {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+.modal-skills span {
+  padding: 7px 9px;
+
+  background: #ecfdf5;
+
+  border-radius: 6px;
+
+  color: #047857;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   MODULE LIST
+===================================================== */
+
+.module-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.module-item {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 8px 10px;
+
+  background: #f8fafc;
+
+  border-radius: 7px;
+
+  color: #475569;
+
+  font-size: 11px;
+}
+
+.module-number {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: #eff6ff;
+
+  border-radius: 50%;
+
+  color: #2563eb;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+/* =====================================================
+   MODAL ACTIONS
+===================================================== */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 9px;
+
+  padding-top: 20px;
+}
+
+.modal-secondary-btn,
+.modal-primary-btn {
+  height: 40px;
+
+  padding: 0 18px;
+
+  border-radius: 7px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.modal-secondary-btn {
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+
+  color: #475569;
+}
+
+.modal-primary-btn {
+  border: none;
+
+  background: #2563eb;
+
+  color: #ffffff;
+}
+
+.modal-primary-btn:hover {
+  background: #1d4ed8;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1050px) {
+
+  .learning-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .active-learning-card {
+    flex-direction: column;
+  }
+
+  .active-learning-right {
+    width: 100%;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .learning-page {
+    padding: 25px 18px 40px;
+  }
+
+  .learning-header {
+    flex-direction: column;
+  }
+
+  .learning-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .active-learning-card {
+    padding: 20px;
+  }
+
+  .active-learning-left {
+    flex-direction: column;
+  }
+
+  .course-actions {
+    grid-template-columns: 1fr;
+  }
+
+}
