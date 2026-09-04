@@ -1,0 +1,18 @@
+skill,category,level
+Python,Programming,Beginner
+Python,Programming,Intermediate
+Python,Programming,Advanced
+SQL,Database,Beginner
+SQL,Database,Intermediate
+SQL,Database,Advanced
+Machine Learning,Artificial Intelligence,Beginner
+Machine Learning,Artificial Intelligence,Intermediate
+Machine Learning,Artificial Intelligence,Advanced
+Deep Learning,Artificial Intelligence,Intermediate
+NLP,Artificial Intelligence,Intermediate
+Pandas,Data Analysis,Intermediate
+NumPy,Data Analysis,Intermediate
+Matplotlib,Data Visualization,Intermediate
+HTML,Web Development,Beginner
+CSS,Web Development,Beginner
+JavaScript,Web Development,Intermediate
