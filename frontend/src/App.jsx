@@ -1,20 +1,20 @@
 import { useState } from 'react'
 import './App.css'
-
+import Industry from "./pages/industry/IndustryLayout";
+import Faculty from "./pages/faculty/Faculty";
 import Projects from './Projects'
-
-/* =====================================================
-   STUDENT IMPORTS
-===================================================== */
 
 import SkillAssessment from './pages/student/SkillAssessment'
 import SkillProfile from './pages/student/SkillProfile'
 import SkillGap from './pages/student/SkillGap'
+
 import CareerGuidance from './pages/student/CareerGuidance'
 import Recommendations from './pages/student/Recommendations'
+
 import Internships from './pages/student/Internships'
 import InternshipDetails from './pages/student/InternshipDetails'
 import Applications from './pages/student/Applications'
+
 import Jobs from './pages/student/Jobs'
 import Learning from './pages/student/Learning'
 import Portfolio from './pages/student/Portfolio'
@@ -22,12 +22,67 @@ import Documents from './pages/student/Documents'
 import Notifications from './pages/student/Notifications'
 import StudentProfile from './pages/student/StudentProfile'
 
-/* =====================================================
-   INDUSTRY IMPORT
-===================================================== */
 
-import IndustryLayout from './pages/industry/IndustryLayout'
+function InstitutionPortal({ onLogout, currentPage, setCurrentPage }) {
+  const items = [
+    ['dashboard', '📊 Dashboard'],
+    ['students', '👨‍🎓 Students'],
+    ['industries', '🏢 Industries'],
+    ['faculty', '👨‍🏫 Faculty'],
+    ['internships', '💼 Internships'],
+    ['placements', '📈 Placements'],
+    ['skill-analytics', '📊 Skill Analytics'],
+    ['reports', '📄 Reports'],
+  ]
 
+  return (
+    <div className="dashboard">
+      <aside className="sidebar">
+        <div className="dashboard-logo">Academia<span>Industry</span></div>
+        <div className="sidebar-role">🏫 Institution / Admin</div>
+        <nav className="sidebar-nav">
+          {items.map(([id, label]) => (
+            <button key={id} className={currentPage === id ? 'active' : ''} onClick={() => setCurrentPage(id)}>
+              {label}
+            </button>
+          ))}
+        </nav>
+        <div style={{ marginTop: 'auto' }}>
+          <button className="sidebar-nav button" onClick={onLogout}>↪ Logout</button>
+        </div>
+      </aside>
+      <main className="main-content">
+        <div className="page-header">
+          <div>
+            <div className="eyebrow">INSTITUTION • ANALYTICS</div>
+            <h1>{currentPage === 'dashboard' ? 'Institution Dashboard' : currentPage.replace('-', ' ')}</h1>
+            <p>Monitor students, faculty, industry engagement, skills and placements.</p>
+          </div>
+        </div>
+        {currentPage === 'dashboard' ? (
+          <div className="stats-grid">
+            <div className="stat-card"><span>Total Students</span><strong>1,248</strong><small>Active students</small></div>
+            <div className="stat-card"><span>Total Industries</span><strong>86</strong><small>Partner companies</small></div>
+            <div className="stat-card"><span>Total Faculty</span><strong>142</strong><small>Academicians</small></div>
+            <div className="stat-card"><span>Placement Rate</span><strong>78%</strong><small>Current outcome</small></div>
+            <div className="stat-card"><span>Internship Participation</span><strong>64%</strong><small>Students participating</small></div>
+            <div className="stat-card"><span>Career Readiness</span><strong>72%</strong><small>Average score</small></div>
+          </div>
+        ) : (
+          <div className="content-card">
+            <h2>{currentPage.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}</h2>
+            <p>This institution module is ready for backend/API integration.</p>
+            <div className="stats-grid">
+              <div className="stat-card"><span>Active Records</span><strong>124</strong></div>
+              <div className="stat-card"><span>Pending Actions</span><strong>18</strong></div>
+              <div className="stat-card"><span>AI Insights</span><strong>92%</strong></div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
 
 function App() {
 
@@ -51,11 +106,16 @@ function App() {
 
 
   /* =====================================================
-     SELECTED ITEMS
+     SELECTED INTERNSHIP
   ===================================================== */
 
   const [selectedInternship, setSelectedInternship] =
     useState(null)
+
+
+  /* =====================================================
+     SELECTED OPPORTUNITY
+  ===================================================== */
 
   const [selectedOpportunity, setSelectedOpportunity] =
     useState(null)
@@ -71,7 +131,9 @@ function App() {
       const saved =
         localStorage.getItem('skillAssessment')
 
-      if (!saved) return null
+      if (!saved) {
+        return null
+      }
 
       try {
         return JSON.parse(saved)
@@ -92,7 +154,9 @@ function App() {
       const saved =
         localStorage.getItem('applications')
 
-      if (!saved) return []
+      if (!saved) {
+        return []
+      }
 
       try {
         return JSON.parse(saved)
@@ -117,7 +181,7 @@ function App() {
 
     const answeredSkills =
       Object.values(skillAnswers).filter(
-        answer =>
+        (answer) =>
           answer !== '' &&
           answer !== null &&
           answer !== undefined
@@ -153,30 +217,31 @@ function App() {
 
 
   /* =====================================================
-     GENERIC APPLY
+     GENERIC APPLICATION HANDLER
   ===================================================== */
 
-  const handleApply = (
-    opportunity,
-    type = 'Internship'
-  ) => {
+  const handleApply = (opportunity, type = 'Internship') => {
 
     if (!opportunity) {
       return
     }
 
+
     const opportunityId =
       String(opportunity.id)
+
 
     const opportunityType =
       String(type)
 
 
-    /* DUPLICATE CHECK */
+    /* -----------------------------------------------
+       CHECK DUPLICATE
+    ------------------------------------------------ */
 
     const alreadyApplied =
       applications.some(
-        application =>
+        (application) =>
           String(application.id) === opportunityId &&
           String(application.type) === opportunityType
       )
@@ -191,10 +256,13 @@ function App() {
       setCurrentPage('applications')
 
       return
+
     }
 
 
-    /* CREATE APPLICATION */
+    /* -----------------------------------------------
+       CREATE APPLICATION
+    ------------------------------------------------ */
 
     const newApplication = {
 
@@ -247,6 +315,10 @@ function App() {
     }
 
 
+    /* -----------------------------------------------
+       UPDATE
+    ------------------------------------------------ */
+
     const updatedApplications = [
       ...applications,
       newApplication
@@ -258,10 +330,18 @@ function App() {
     )
 
 
+    /* -----------------------------------------------
+       SUCCESS
+    ------------------------------------------------ */
+
     alert(
       `Application submitted for ${newApplication.title}!`
     )
 
+
+    /* -----------------------------------------------
+       GO TO APPLICATIONS
+    ------------------------------------------------ */
 
     setCurrentPage(
       'applications'
@@ -271,11 +351,11 @@ function App() {
 
 
   /* =====================================================
-     STUDENT APPLY HANDLERS
+     INTERNSHIP APPLY
   ===================================================== */
 
   const handleInternshipApply =
-    internship => {
+    (internship) => {
 
       handleApply(
         internship,
@@ -285,8 +365,12 @@ function App() {
     }
 
 
+  /* =====================================================
+     PROJECT APPLY
+  ===================================================== */
+
   const handleProjectApply =
-    project => {
+    (project) => {
 
       handleApply(
         project,
@@ -296,8 +380,12 @@ function App() {
     }
 
 
+  /* =====================================================
+     JOB APPLY
+  ===================================================== */
+
   const handleJobApply =
-    job => {
+    (job) => {
 
       handleApply(
         job,
@@ -306,6 +394,10 @@ function App() {
 
     }
 
+
+  /* =====================================================
+     RECOMMENDATION APPLY
+  ===================================================== */
 
   const handleRecommendationApply =
     (item, type) => {
@@ -319,11 +411,11 @@ function App() {
 
 
   /* =====================================================
-     VIEW INTERNSHIP
+     VIEW INTERNSHIP DETAILS
   ===================================================== */
 
   const handleViewInternshipDetails =
-    internship => {
+    (internship) => {
 
       setSelectedInternship(
         internship
@@ -337,11 +429,11 @@ function App() {
 
 
   /* =====================================================
-     VIEW RECOMMENDATION
+     VIEW RECOMMENDATION DETAILS
   ===================================================== */
 
   const handleViewRecommendation =
-    opportunity => {
+    (opportunity) => {
 
       setSelectedOpportunity(
         opportunity
@@ -351,97 +443,60 @@ function App() {
 
 
   /* =====================================================
-     SIGNUP
+     SIGN UP
   ===================================================== */
 
-  const handleSignup = e => {
+  const handleSignup = (e) => {
 
     e.preventDefault()
 
-    const formData =
-      new FormData(e.target)
+    const formData = new FormData(e.target)
 
-    const role =
-      formData.get('role')
-
+    const fullName = formData.get('fullName') || ''
+    const email = formData.get('email') || ''
+    const password = formData.get('password') || ''
+    const role = formData.get('role')
 
     if (!role) {
-
-      alert(
-        'Please select an account type.'
-      )
-
+      alert('Please select an account type.')
       return
     }
 
+    const user = { fullName, email, password, role }
+
+    localStorage.setItem('currentUser', JSON.stringify(user))
+    localStorage.setItem('userRole', role)
 
     setUserRole(role)
-
+    setCurrentPage('dashboard')
     setIsLoggedIn(true)
-
     setShowSignup(false)
-
-
-    /* ROLE BASED REDIRECTION */
-
-    if (role === 'company') {
-
-      setCurrentPage(
-        'industry-dashboard'
-      )
-
-    } else {
-
-      setCurrentPage(
-        'dashboard'
-      )
-
-    }
-
   }
-
 
   /* =====================================================
      LOGIN
   ===================================================== */
 
-  const handleLogin = e => {
+  const handleLogin = (e) => {
 
     e.preventDefault()
 
-    /*
-      TEMPORARY FRONTEND LOGIN
+    let role = localStorage.getItem('userRole')
 
-      Backend authentication connect
-      হলে এখানে backend response-এর
-      role ব্যবহার করবে.
-    */
-
-    const role = 'student'
-
-    setUserRole(role)
-
-    setIsLoggedIn(true)
-
-    setShowLogin(false)
-
-
-    if (role === 'company') {
-
-      setCurrentPage(
-        'industry-dashboard'
-      )
-
-    } else {
-
-      setCurrentPage(
-        'dashboard'
-      )
-
+    if (!role) {
+      try {
+        const savedUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
+        role = savedUser?.role || 'student'
+      } catch {
+        role = 'student'
+      }
     }
 
+    setUserRole(role)
+    setCurrentPage('dashboard')
+    setIsLoggedIn(true)
+    setShowLogin(false)
   }
-
 
   /* =====================================================
      LOGOUT
@@ -449,22 +504,30 @@ function App() {
 
   const handleLogout = () => {
 
-    setIsLoggedIn(false)
+    setIsLoggedIn(
+      false
+    )
 
-    setUserRole('')
+    setUserRole(
+      ''
+    )
 
-    setCurrentPage('dashboard')
+    setCurrentPage(
+      'dashboard'
+    )
 
   }
 
 
   /* =====================================================
-     NAVIGATION
+     NAVIGATION HELPER
   ===================================================== */
 
-  const navigateTo = page => {
+  const navigateTo = (page) => {
 
-    setCurrentPage(page)
+    setCurrentPage(
+      page
+    )
 
   }
 
@@ -473,24 +536,31 @@ function App() {
      INDUSTRY PORTAL
   ===================================================== */
 
-  if (
-    isLoggedIn &&
-    userRole === 'company'
-  ) {
-
-    return (
-
-      <IndustryLayout
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        navigateTo={navigateTo}
-        onLogout={handleLogout}
-      />
-
-    )
-
+  if (isLoggedIn && userRole === 'company') {
+    return <Industry onLogout={handleLogout} currentPage="dashboard" setCurrentPage={navigateTo} />
   }
 
+  /* =====================================================
+     FACULTY PORTAL
+  ===================================================== */
+
+  if (isLoggedIn && userRole === 'faculty') {
+    return <Faculty onLogout={handleLogout} currentPage="dashboard" setCurrentPage={navigateTo} />
+  }
+
+  /* =====================================================
+     INSTITUTION PORTAL
+  ===================================================== */
+
+  if (isLoggedIn && userRole === 'institution') {
+    return (
+      <InstitutionPortal
+        onLogout={handleLogout}
+        currentPage={currentPage}
+        setCurrentPage={navigateTo}
+      />
+    )
+  }
 
   /* =====================================================
      STUDENT PORTAL
@@ -513,6 +583,8 @@ function App() {
         <aside className="sidebar">
 
 
+          {/* LOGO */}
+
           <div className="dashboard-logo">
 
             Academia
@@ -523,12 +595,18 @@ function App() {
           </div>
 
 
+          {/* ROLE */}
+
           <div className="sidebar-role">
 
             🎓 Student
 
           </div>
 
+
+          {/* =================================================
+             NAVIGATION
+          ================================================= */}
 
           <nav className="sidebar-nav">
 
@@ -568,7 +646,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('skill-assessment')
+                navigateTo(
+                  'skill-assessment'
+                )
               }
             >
               📝 Skill Assessment
@@ -582,7 +662,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('skill-profile')
+                navigateTo(
+                  'skill-profile'
+                )
               }
             >
               📊 Skill Profile
@@ -596,7 +678,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('skill-gap')
+                navigateTo(
+                  'skill-gap'
+                )
               }
             >
               📉 Skill Gap
@@ -610,7 +694,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('career-guidance')
+                navigateTo(
+                  'career-guidance'
+                )
               }
             >
               🧭 Career Guidance
@@ -624,7 +710,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('recommendations')
+                navigateTo(
+                  'recommendations'
+                )
               }
             >
               🤖 Recommendations
@@ -638,7 +726,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('internships')
+                navigateTo(
+                  'internships'
+                )
               }
             >
               🎯 Internships
@@ -652,7 +742,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('jobs')
+                navigateTo(
+                  'jobs'
+                )
               }
             >
               💼 Jobs
@@ -666,7 +758,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('applications')
+                navigateTo(
+                  'applications'
+                )
               }
             >
               📄 Applications
@@ -680,7 +774,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('learning')
+                navigateTo(
+                  'learning'
+                )
               }
             >
               📚 Learning
@@ -694,7 +790,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('portfolio')
+                navigateTo(
+                  'portfolio'
+                )
               }
             >
               🏆 Portfolio
@@ -708,7 +806,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('documents')
+                navigateTo(
+                  'documents'
+                )
               }
             >
               📁 Documents
@@ -722,7 +822,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('notifications')
+                navigateTo(
+                  'notifications'
+                )
               }
             >
               🔔 Notifications
@@ -736,7 +838,9 @@ function App() {
                   : ''
               }
               onClick={() =>
-                navigateTo('profile')
+                navigateTo(
+                  'profile'
+                )
               }
             >
               👤 My Profile
@@ -745,6 +849,8 @@ function App() {
 
           </nav>
 
+
+          {/* LOGOUT */}
 
           <button
             className="logout-btn"
@@ -764,6 +870,10 @@ function App() {
         <main className="dashboard-main">
 
 
+          {/* =================================================
+             PROJECTS
+          ================================================= */}
+
           {currentPage === 'projects' ? (
 
             <Projects
@@ -773,15 +883,22 @@ function App() {
             />
 
 
-          ) : currentPage === 'skill-assessment' ? (
+          /* =================================================
+             SKILL ASSESSMENT
+          ================================================= */
+
+          ) : currentPage ===
+            'skill-assessment' ? (
 
             <SkillAssessment
 
-              onComplete={answers => {
+              onComplete={(answers) => {
 
                 localStorage.setItem(
                   'skillAssessment',
-                  JSON.stringify(answers)
+                  JSON.stringify(
+                    answers
+                  )
                 )
 
                 setSkillAnswers(
@@ -797,20 +914,40 @@ function App() {
             />
 
 
-          ) : currentPage === 'skill-profile' ? (
+          /* =================================================
+             SKILL PROFILE
+          ================================================= */
+
+          ) : currentPage ===
+            'skill-profile' ? (
 
             <SkillProfile
-              answers={skillAnswers}
-              onNavigate={navigateTo}
+              answers={
+                skillAnswers
+              }
+
+              onNavigate={
+                navigateTo
+              }
             />
 
 
-          ) : currentPage === 'skill-gap' ? (
+          /* =================================================
+             SKILL GAP
+          ================================================= */
+
+          ) : currentPage ===
+            'skill-gap' ? (
 
             <SkillGap />
 
 
-          ) : currentPage === 'career-guidance' ? (
+          /* =================================================
+             CAREER GUIDANCE
+          ================================================= */
+
+          ) : currentPage ===
+            'career-guidance' ? (
 
             <CareerGuidance
 
@@ -819,23 +956,30 @@ function App() {
               }
 
               onStartLearning={() =>
-                navigateTo('learning')
+                navigateTo(
+                  'learning'
+                )
               }
 
-              onViewCareerPath={
-                career => {
+              onViewCareerPath={(
+                career
+              ) => {
 
-                  setSelectedOpportunity(
-                    career
-                  )
+                setSelectedOpportunity(
+                  career
+                )
 
-                }
-              }
+              }}
 
             />
 
 
-          ) : currentPage === 'recommendations' ? (
+          /* =================================================
+             RECOMMENDATIONS
+          ================================================= */
+
+          ) : currentPage ===
+            'recommendations' ? (
 
             <Recommendations
 
@@ -852,18 +996,27 @@ function App() {
               }
 
               onStartLearning={() =>
-                navigateTo('learning')
+                navigateTo(
+                  'learning'
+                )
               }
 
             />
 
 
-          ) : currentPage === 'internships' ? (
+          /* =================================================
+             INTERNSHIPS
+          ================================================= */
+
+          ) : currentPage ===
+            'internships' ? (
 
             <Internships
 
               onBack={() =>
-                navigateTo('dashboard')
+                navigateTo(
+                  'dashboard'
+                )
               }
 
               onViewDetails={
@@ -877,7 +1030,12 @@ function App() {
             />
 
 
-          ) : currentPage === 'internship-details' ? (
+          /* =================================================
+             INTERNSHIP DETAILS
+          ================================================= */
+
+          ) : currentPage ===
+            'internship-details' ? (
 
             selectedInternship ? (
 
@@ -888,7 +1046,9 @@ function App() {
                 }
 
                 onBack={() =>
-                  navigateTo('internships')
+                  navigateTo(
+                    'internships'
+                  )
                 }
 
                 onApply={
@@ -908,7 +1068,9 @@ function App() {
                 <button
                   className="apply-btn"
                   onClick={() =>
-                    navigateTo('internships')
+                    navigateTo(
+                      'internships'
+                    )
                   }
                 >
                   Back to Internships
@@ -919,7 +1081,12 @@ function App() {
             )
 
 
-          ) : currentPage === 'applications' ? (
+          /* =================================================
+             APPLICATIONS
+          ================================================= */
+
+          ) : currentPage ===
+            'applications' ? (
 
             <Applications
 
@@ -934,7 +1101,12 @@ function App() {
             />
 
 
-          ) : currentPage === 'jobs' ? (
+          /* =================================================
+             JOBS
+          ================================================= */
+
+          ) : currentPage ===
+            'jobs' ? (
 
             <Jobs
 
@@ -949,58 +1121,93 @@ function App() {
             />
 
 
-          ) : currentPage === 'learning' ? (
+          /* =================================================
+             LEARNING
+          ================================================= */
+
+          ) : currentPage ===
+            'learning' ? (
 
             <Learning
+
               onNavigate={
                 navigateTo
               }
+
             />
 
 
-          ) : currentPage === 'portfolio' ? (
+          /* =================================================
+             PORTFOLIO
+          ================================================= */
+
+          ) : currentPage ===
+            'portfolio' ? (
 
             <Portfolio
+
               onNavigate={
                 navigateTo
               }
+
             />
 
 
-          ) : currentPage === 'documents' ? (
+          /* =================================================
+             DOCUMENTS
+          ================================================= */
+
+          ) : currentPage ===
+            'documents' ? (
 
             <Documents
+
               onNavigate={
                 navigateTo
               }
+
             />
 
 
-          ) : currentPage === 'notifications' ? (
+          /* =================================================
+             NOTIFICATIONS
+          ================================================= */
+
+          ) : currentPage ===
+            'notifications' ? (
 
             <Notifications
+
               onNavigate={
                 navigateTo
               }
+
             />
 
 
-          ) : currentPage === 'profile' ? (
+          /* =================================================
+             PROFILE
+          ================================================= */
+
+          ) : currentPage ===
+            'profile' ? (
 
             <StudentProfile
-              onNavigate={
-                navigateTo
-              }
+              onNavigate={navigateTo}
             />
 
+
+          /* =================================================
+             DASHBOARD
+          ================================================= */
 
           ) : (
 
-            /* =================================================
-               STUDENT DASHBOARD
-            ================================================= */
-
             <>
+
+              {/* =================================================
+                 HEADER
+              ================================================= */}
 
               <header className="dashboard-header">
 
@@ -1029,10 +1236,14 @@ function App() {
               </header>
 
 
-              {/* STATS */}
+              {/* =================================================
+                 STAT CARDS
+              ================================================= */}
 
               <section className="stats-grid">
 
+
+                {/* PROJECTS */}
 
                 <div className="stat-card">
 
@@ -1055,10 +1266,14 @@ function App() {
                 </div>
 
 
+                {/* INTERNSHIPS */}
+
                 <div
                   className="stat-card"
                   onClick={() =>
-                    navigateTo('internships')
+                    navigateTo(
+                      'internships'
+                    )
                   }
                   style={{
                     cursor: 'pointer'
@@ -1084,10 +1299,14 @@ function App() {
                 </div>
 
 
+                {/* APPLICATIONS */}
+
                 <div
                   className="stat-card"
                   onClick={() =>
-                    navigateTo('applications')
+                    navigateTo(
+                      'applications'
+                    )
                   }
                   style={{
                     cursor: 'pointer'
@@ -1113,10 +1332,14 @@ function App() {
                 </div>
 
 
+                {/* PROFILE */}
+
                 <div
                   className="stat-card"
                   onClick={() =>
-                    navigateTo('skill-profile')
+                    navigateTo(
+                      'skill-profile'
+                    )
                   }
                   style={{
                     cursor: 'pointer'
@@ -1147,7 +1370,9 @@ function App() {
               </section>
 
 
-              {/* AI TOOLS */}
+              {/* =================================================
+                 AI CAREER TOOLS
+              ================================================= */}
 
               <section className="dashboard-section">
 
@@ -1171,6 +1396,8 @@ function App() {
                 <div className="opportunity-grid">
 
 
+                  {/* CAREER GUIDANCE */}
+
                   <div className="opportunity-card">
 
                     <div className="opportunity-top">
@@ -1180,6 +1407,7 @@ function App() {
                       </span>
 
                     </div>
+
 
                     <h3>
                       Career Guidance
@@ -1191,6 +1419,7 @@ function App() {
                       scores and personalized
                       learning paths.
                     </p>
+
 
                     <button
                       className="apply-btn"
@@ -1206,6 +1435,8 @@ function App() {
                   </div>
 
 
+                  {/* RECOMMENDATIONS */}
+
                   <div className="opportunity-card">
 
                     <div className="opportunity-top">
@@ -1215,6 +1446,7 @@ function App() {
                       </span>
 
                     </div>
+
 
                     <h3>
                       Personalized Recommendations
@@ -1226,6 +1458,7 @@ function App() {
                       opportunities matched
                       to your skills.
                     </p>
+
 
                     <button
                       className="apply-btn"
@@ -1246,7 +1479,9 @@ function App() {
               </section>
 
 
-              {/* OPPORTUNITIES */}
+              {/* =================================================
+                 RECOMMENDED OPPORTUNITIES
+              ================================================= */}
 
               <section className="dashboard-section">
 
@@ -1268,7 +1503,9 @@ function App() {
                   <button
                     className="view-all-btn"
                     onClick={() =>
-                      navigateTo('internships')
+                      navigateTo(
+                        'internships'
+                      )
                     }
                   >
                     View All
@@ -1279,6 +1516,8 @@ function App() {
 
                 <div className="opportunity-grid">
 
+
+                  {/* PROJECT */}
 
                   <div className="opportunity-card">
 
@@ -1294,6 +1533,7 @@ function App() {
 
                     </div>
 
+
                     <h3>
                       AI-Based Student Analytics
                     </h3>
@@ -1301,6 +1541,7 @@ function App() {
                     <p className="company-name">
                       Tech Innovations Pvt. Ltd.
                     </p>
+
 
                     <div className="opportunity-details">
 
@@ -1313,6 +1554,7 @@ function App() {
                       </span>
 
                     </div>
+
 
                     <div className="skills">
 
@@ -1330,10 +1572,13 @@ function App() {
 
                     </div>
 
+
                     <button
                       className="apply-btn"
                       onClick={() =>
-                        navigateTo('projects')
+                        navigateTo(
+                          'projects'
+                        )
                       }
                     >
                       View Opportunity
@@ -1341,6 +1586,8 @@ function App() {
 
                   </div>
 
+
+                  {/* INTERNSHIP */}
 
                   <div className="opportunity-card">
 
@@ -1356,6 +1603,7 @@ function App() {
 
                     </div>
 
+
                     <h3>
                       Frontend Development Intern
                     </h3>
@@ -1363,6 +1611,7 @@ function App() {
                     <p className="company-name">
                       Digital Solutions India
                     </p>
+
 
                     <div className="opportunity-details">
 
@@ -1375,6 +1624,7 @@ function App() {
                       </span>
 
                     </div>
+
 
                     <div className="skills">
 
@@ -1392,10 +1642,13 @@ function App() {
 
                     </div>
 
+
                     <button
                       className="apply-btn"
                       onClick={() =>
-                        navigateTo('internships')
+                        navigateTo(
+                          'internships'
+                        )
                       }
                     >
                       View Opportunity
@@ -1403,6 +1656,8 @@ function App() {
 
                   </div>
 
+
+                  {/* PROJECT 2 */}
 
                   <div className="opportunity-card">
 
@@ -1418,6 +1673,7 @@ function App() {
 
                     </div>
 
+
                     <h3>
                       Smart Healthcare Prediction
                     </h3>
@@ -1425,6 +1681,7 @@ function App() {
                     <p className="company-name">
                       HealthTech Research
                     </p>
+
 
                     <div className="opportunity-details">
 
@@ -1437,6 +1694,7 @@ function App() {
                       </span>
 
                     </div>
+
 
                     <div className="skills">
 
@@ -1454,10 +1712,13 @@ function App() {
 
                     </div>
 
+
                     <button
                       className="apply-btn"
                       onClick={() =>
-                        navigateTo('projects')
+                        navigateTo(
+                          'projects'
+                        )
                       }
                     >
                       View Opportunity
@@ -1471,7 +1732,9 @@ function App() {
               </section>
 
 
-              {/* PROFILE COMPLETION */}
+              {/* =================================================
+                 PROFILE COMPLETION
+              ================================================= */}
 
               <section className="profile-card">
 
@@ -1537,6 +1800,7 @@ function App() {
 
               </section>
 
+
             </>
 
           )}
@@ -1551,7 +1815,7 @@ function App() {
 
 
   /* =====================================================
-     PUBLIC HOME PAGE
+     HOMEPAGE
   ===================================================== */
 
   return (
@@ -1559,7 +1823,9 @@ function App() {
     <div className="app">
 
 
-      {/* NAVBAR */}
+      {/* =================================================
+         NAVBAR
+      ================================================= */}
 
       <header className="navbar">
 
@@ -1598,7 +1864,9 @@ function App() {
           <button
             className="login-btn"
             onClick={() =>
-              setShowLogin(true)
+              setShowLogin(
+                true
+              )
             }
           >
             Login
@@ -1608,7 +1876,9 @@ function App() {
           <button
             className="signup-btn"
             onClick={() =>
-              setShowSignup(true)
+              setShowSignup(
+                true
+              )
             }
           >
             Sign Up
@@ -1619,7 +1889,9 @@ function App() {
       </header>
 
 
-      {/* HERO */}
+      {/* =================================================
+         HERO
+      ================================================= */}
 
       <main>
 
@@ -1665,7 +1937,9 @@ function App() {
               <button
                 className="primary-btn"
                 onClick={() =>
-                  setShowSignup(true)
+                  setShowSignup(
+                    true
+                  )
                 }
               >
                 Explore Opportunities
@@ -1676,7 +1950,9 @@ function App() {
                 className="secondary-btn"
                 onClick={() =>
                   document
-                    .getElementById('projects')
+                    .getElementById(
+                      'projects'
+                    )
                     ?.scrollIntoView({
                       behavior: 'smooth'
                     })
@@ -1712,7 +1988,9 @@ function App() {
         </section>
 
 
-        {/* FEATURES */}
+        {/* =================================================
+           FEATURES
+        ================================================= */}
 
         <section
           className="features"
@@ -1802,7 +2080,9 @@ function App() {
       </main>
 
 
-      {/* FOOTER */}
+      {/* =================================================
+         FOOTER
+      ================================================= */}
 
       <footer>
 
@@ -1821,7 +2101,7 @@ function App() {
 
         <div
           className="modal-overlay"
-          onMouseDown={e => {
+          onMouseDown={(e) => {
 
             if (
               e.target === e.currentTarget
@@ -1837,7 +2117,9 @@ function App() {
             <button
               className="close-btn"
               onClick={() =>
-                setShowLogin(false)
+                setShowLogin(
+                  false
+                )
               }
             >
               ×
@@ -1855,7 +2137,9 @@ function App() {
 
 
             <form
-              onSubmit={handleLogin}
+              onSubmit={
+                handleLogin
+              }
             >
 
               <label>
@@ -1864,6 +2148,7 @@ function App() {
 
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 required
               />
@@ -1898,9 +2183,13 @@ function App() {
                 type="button"
                 onClick={() => {
 
-                  setShowLogin(false)
+                  setShowLogin(
+                    false
+                  )
 
-                  setShowSignup(true)
+                  setShowSignup(
+                    true
+                  )
 
                 }}
               >
@@ -1924,7 +2213,7 @@ function App() {
 
         <div
           className="modal-overlay"
-          onMouseDown={e => {
+          onMouseDown={(e) => {
 
             if (
               e.target === e.currentTarget
@@ -1940,7 +2229,9 @@ function App() {
             <button
               className="close-btn"
               onClick={() =>
-                setShowSignup(false)
+                setShowSignup(
+                  false
+                )
               }
             >
               ×
@@ -1958,8 +2249,11 @@ function App() {
 
 
             <form
-              onSubmit={handleSignup}
+              onSubmit={
+                handleSignup
+              }
             >
+
 
               <label>
                 Full Name
@@ -1967,6 +2261,7 @@ function App() {
 
               <input
                 type="text"
+                name="fullName"
                 placeholder="Enter your full name"
                 required
               />
@@ -1978,6 +2273,7 @@ function App() {
 
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 required
               />
@@ -1989,6 +2285,7 @@ function App() {
 
               <input
                 type="password"
+                name="password"
                 placeholder="Create a password"
                 required
               />
@@ -2022,6 +2319,11 @@ function App() {
                 </option>
 
 
+                <option value="faculty">
+                  Faculty / Academician
+                </option>
+
+
                 <option value="institution">
                   Institution
                 </option>
@@ -2047,9 +2349,13 @@ function App() {
                 type="button"
                 onClick={() => {
 
-                  setShowSignup(false)
+                  setShowSignup(
+                    false
+                  )
 
-                  setShowLogin(true)
+                  setShowLogin(
+                    true
+                  )
 
                 }}
               >
@@ -2063,6 +2369,7 @@ function App() {
         </div>
 
       )}
+
 
     </div>
 
