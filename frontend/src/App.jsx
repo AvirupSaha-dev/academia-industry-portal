@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Industry from "./pages/industry/IndustryLayout";
 import Faculty from "./pages/faculty/Faculty";
+import InstitutionPortal from './pages/institution/InstitutionPortal'
 import Projects from './Projects'
 
 import SkillAssessment from './pages/student/SkillAssessment'
@@ -23,66 +24,7 @@ import Notifications from './pages/student/Notifications'
 import StudentProfile from './pages/student/StudentProfile'
 
 
-function InstitutionPortal({ onLogout, currentPage, setCurrentPage }) {
-  const items = [
-    ['dashboard', '📊 Dashboard'],
-    ['students', '👨‍🎓 Students'],
-    ['industries', '🏢 Industries'],
-    ['faculty', '👨‍🏫 Faculty'],
-    ['internships', '💼 Internships'],
-    ['placements', '📈 Placements'],
-    ['skill-analytics', '📊 Skill Analytics'],
-    ['reports', '📄 Reports'],
-  ]
 
-  return (
-    <div className="dashboard">
-      <aside className="sidebar">
-        <div className="dashboard-logo">Academia<span>Industry</span></div>
-        <div className="sidebar-role">🏫 Institution / Admin</div>
-        <nav className="sidebar-nav">
-          {items.map(([id, label]) => (
-            <button key={id} className={currentPage === id ? 'active' : ''} onClick={() => setCurrentPage(id)}>
-              {label}
-            </button>
-          ))}
-        </nav>
-        <div style={{ marginTop: 'auto' }}>
-          <button className="sidebar-nav button" onClick={onLogout}>↪ Logout</button>
-        </div>
-      </aside>
-      <main className="main-content">
-        <div className="page-header">
-          <div>
-            <div className="eyebrow">INSTITUTION • ANALYTICS</div>
-            <h1>{currentPage === 'dashboard' ? 'Institution Dashboard' : currentPage.replace('-', ' ')}</h1>
-            <p>Monitor students, faculty, industry engagement, skills and placements.</p>
-          </div>
-        </div>
-        {currentPage === 'dashboard' ? (
-          <div className="stats-grid">
-            <div className="stat-card"><span>Total Students</span><strong>1,248</strong><small>Active students</small></div>
-            <div className="stat-card"><span>Total Industries</span><strong>86</strong><small>Partner companies</small></div>
-            <div className="stat-card"><span>Total Faculty</span><strong>142</strong><small>Academicians</small></div>
-            <div className="stat-card"><span>Placement Rate</span><strong>78%</strong><small>Current outcome</small></div>
-            <div className="stat-card"><span>Internship Participation</span><strong>64%</strong><small>Students participating</small></div>
-            <div className="stat-card"><span>Career Readiness</span><strong>72%</strong><small>Average score</small></div>
-          </div>
-        ) : (
-          <div className="content-card">
-            <h2>{currentPage.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}</h2>
-            <p>This institution module is ready for backend/API integration.</p>
-            <div className="stats-grid">
-              <div className="stat-card"><span>Active Records</span><strong>124</strong></div>
-              <div className="stat-card"><span>Pending Actions</span><strong>18</strong></div>
-              <div className="stat-card"><span>AI Insights</span><strong>92%</strong></div>
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
-  )
-}
 
 function App() {
 
